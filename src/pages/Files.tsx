@@ -201,11 +201,11 @@ const Files = () => {
   }, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">الملفات</h1>
-          <p className="text-muted-foreground">إدارة ومشاركة ملفات المشاريع</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">الملفات</h1>
+          <p className="text-lg text-muted-foreground">إدارة ومشاركة ملفات المشاريع</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -277,7 +277,7 @@ const Files = () => {
             placeholder="البحث في الملفات..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pr-10"
+            className="pr-10 text-right"
           />
         </div>
         <Select value={filterType} onValueChange={setFilterType}>

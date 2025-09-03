@@ -29,7 +29,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir="rtl">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -42,7 +42,7 @@ const Layout = () => {
       <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-card shadow-lg transform transition-transform lg:translate-x-0 lg:static lg:inset-0 ${
         sidebarOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
-        <div className="flex items-center justify-between h-16 px-4 border-b">
+        <div className="flex items-center justify-between h-16 px-6 border-b">
           <h1 className="text-xl font-bold text-primary">إدارة العمل</h1>
           <Button
             variant="ghost"
@@ -70,7 +70,7 @@ const Layout = () => {
                 }
                 onClick={() => setSidebarOpen(false)}
               >
-                <Icon className="ml-3 h-5 w-5" />
+                <Icon className="mr-3 h-5 w-5" />
                 {item.name}
               </NavLink>
             );
@@ -82,7 +82,7 @@ const Layout = () => {
       <div className="lg:mr-64">
         {/* Header */}
         <header className="bg-card shadow-sm border-b">
-          <div className="flex items-center justify-between h-16 px-4">
+          <div className="flex items-center justify-between h-16 px-6">
             <Button
               variant="ghost"
               size="icon"
@@ -92,7 +92,7 @@ const Layout = () => {
               <Menu className="h-6 w-6" />
             </Button>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-reverse space-x-4">
               <div className="text-sm text-muted-foreground">
                 مرحباً بك في نظام إدارة العمل عن بُعد
               </div>

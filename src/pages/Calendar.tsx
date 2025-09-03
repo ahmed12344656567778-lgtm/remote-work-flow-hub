@@ -127,11 +127,11 @@ const Calendar = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">التقويم</h1>
-          <p className="text-muted-foreground">عرض المواعيد والأحداث المهمة</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">التقويم</h1>
+          <p className="text-lg text-muted-foreground">عرض المواعيد والأحداث المهمة</p>
         </div>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />

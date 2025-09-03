@@ -123,11 +123,11 @@ const Projects = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">المشاريع</h1>
-          <p className="text-muted-foreground">إدارة وتتبع جميع مشاريع الشركة</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">المشاريع</h1>
+          <p className="text-lg text-muted-foreground">إدارة وتتبع جميع مشاريع الشركة</p>
         </div>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -143,7 +143,7 @@ const Projects = () => {
             placeholder="البحث في المشاريع..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pr-10"
+            className="pr-10 text-right"
           />
         </div>
         <div className="flex gap-2">

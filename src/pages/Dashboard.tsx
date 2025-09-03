@@ -63,10 +63,10 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">لوحة التحكم</h1>
-        <p className="text-muted-foreground">نظرة شاملة على حالة المشاريع والمهام</p>
+    <div className="space-y-8" dir="rtl">
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold text-foreground">لوحة التحكم</h1>
+        <p className="text-lg text-muted-foreground">نظرة شاملة على حالة المشاريع والمهام</p>
       </div>
 
       {/* Stats Cards */}
