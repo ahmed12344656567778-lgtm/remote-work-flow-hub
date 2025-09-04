@@ -29,7 +29,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background flex" dir="rtl">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -39,10 +39,10 @@ const Layout = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-card shadow-lg transform transition-transform lg:translate-x-0 lg:static lg:inset-0 ${
-        sidebarOpen ? 'translate-x-0' : 'translate-x-full'
+      <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-card shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
       }`}>
-        <div className="flex items-center justify-between h-16 px-6 border-b">
+        <div className="flex items-center justify-between h-16 px-6 border-b border-border">
           <h1 className="text-xl font-bold text-primary">إدارة العمل</h1>
           <Button
             variant="ghost"
@@ -54,7 +54,7 @@ const Layout = () => {
           </Button>
         </div>
         
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 h-full overflow-y-auto">
           {navigation.map((item) => {
             const Icon = item.icon;
             return (
@@ -70,7 +70,7 @@ const Layout = () => {
                 }
                 onClick={() => setSidebarOpen(false)}
               >
-                <Icon className="mr-3 h-5 w-5" />
+                <Icon className="ml-3 h-5 w-5 flex-shrink-0" />
                 {item.name}
               </NavLink>
             );
@@ -79,10 +79,10 @@ const Layout = () => {
       </div>
 
       {/* Main content */}
-      <div className="lg:mr-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="bg-card shadow-sm border-b">
-          <div className="flex items-center justify-between h-16 px-6">
+        <header className="bg-card shadow-sm border-b border-border h-16 flex-shrink-0">
+          <div className="flex items-center justify-between h-full px-6">
             <Button
               variant="ghost"
               size="icon"
@@ -101,7 +101,7 @@ const Layout = () => {
         </header>
 
         {/* Page content */}
-        <main className="p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>
       </div>
