@@ -6,21 +6,21 @@ const Solutions = () => {
   const solutions = [
     {
       icon: Building2,
-      title: "Enterprise Solutions",
-      description: "Scalable solutions for large organizations with advanced security, compliance, and custom integrations.",
-      features: ["Custom integrations", "Advanced security", "Dedicated support", "Compliance tools"]
+      title: "حلول المؤسسات",
+      description: "حلول قابلة للتطوير للمنظمات الكبيرة مع الأمان المتقدم والامتثال والتكامل المخصص.",
+      features: ["تكاملات مخصصة", "أمان متقدم", "دعم مخصص", "أدوات الامتثال"]
     },
     {
       icon: Users2,
-      title: "Small Teams",
-      description: "Perfect for startups and small teams looking to improve remote collaboration and productivity.",
-      features: ["Easy setup", "Core features", "Team chat", "Basic analytics"]
+      title: "الفرق الصغيرة",
+      description: "مثالية للشركات الناشئة والفرق الصغيرة التي تسعى لتحسين التعاون والإنتاجية عن بُعد.",
+      features: ["إعداد سهل", "المميزات الأساسية", "دردشة الفريق", "تحليلات أساسية"]
     },
     {
       icon: Zap,
-      title: "Growing Companies",
-      description: "Advanced features for mid-sized companies scaling their remote operations and team management.",
-      features: ["Advanced analytics", "Workflow automation", "API access", "Priority support"]
+      title: "الشركات النامية",
+      description: "مميزات متقدمة للشركات متوسطة الحجم التي تتوسع في عملياتها وإدارة فرقها عن بُعد.",
+      features: ["تحليلات متقدمة", "أتمتة سير العمل", "وصول API", "دعم أولوية"]
     }
   ];
 
@@ -29,11 +29,10 @@ const Solutions = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
-            Solutions for Every Team Size
+            حلول لكل حجم فريق
           </h2>
           <p className="text-lg text-text-muted max-w-2xl mx-auto">
-            Whether you're a startup or enterprise, we have the right solution 
-            to help your remote team succeed and grow.
+            سواء كنت شركة ناشئة أم مؤسسة، لدينا الحل المناسب لمساعدة فريقك عن بُعد على النجاح والنمو.
           </p>
         </div>
         
@@ -58,7 +57,7 @@ const Solutions = () => {
                   ))}
                 </ul>
                 <Button variant="outline" className="w-full">
-                  Learn More
+                  اعرف المزيد
                 </Button>
               </CardContent>
             </Card>
@@ -67,7 +66,7 @@ const Solutions = () => {
         
         <div className="text-center">
           <Button size="lg" className="shadow-button">
-            Start Free Trial
+            ابدأ التجربة المجانية
           </Button>
         </div>
       </div>

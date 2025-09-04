@@ -4,24 +4,24 @@ import { Star } from "lucide-react";
 const Testimonials = () => {
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      role: "Project Manager",
-      company: "TechCorp",
-      content: "FnW has revolutionized how we manage our remote team. The communication tools and progress tracking features have increased our productivity by 40%.",
+      name: "أحمد محمد",
+      role: "مدير المشروع",
+      company: "شركة التقنية الحديثة",
+      content: "FnW غير تماماً طريقة إدارة فريقنا عن بُعد. تحسنت الإنتاجية بنسبة 40% وأصبح التواصل أكثر فعالية بكثير.",
       rating: 5
     },
     {
-      name: "Ahmed Hassan",
-      role: "CTO",
-      company: "StartupX",
-      content: "The seamless integration and user-friendly interface made the transition to remote work effortless. Our team collaboration has never been better.",
+      name: "فاطمة أحمد", 
+      role: "مديرة التطوير",
+      company: "شركة الابتكار الرقمي",
+      content: "الواجهة سهلة الاستخدام والميزات شاملة. ساعدنا FnW في تنظيم عملنا وتتبع تقدم المشاريع بطريقة مثالية.",
       rating: 5
     },
     {
-      name: "Emily Chen",
-      role: "Team Lead",
-      company: "GlobalTech",
-      content: "Outstanding platform for remote team management. The analytics and reporting features provide valuable insights into team performance.",
+      name: "سالم خالد",
+      role: "المدير التنفيذي", 
+      company: "شركة النمو السريع",
+      content: "بعد استخدام عدة منصات، وجدنا أن FnW هو الحل الأمثل. وفر علينا الوقت والمال وحسن من تعاون الفريق بشكل ملحوظ.",
       rating: 5
     }
   ];
@@ -31,11 +31,10 @@ const Testimonials = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
-            What Our Customers Say
+            ماذا يقول عملاؤنا
           </h2>
           <p className="text-lg text-text-muted max-w-2xl mx-auto">
-            Join thousands of teams worldwide who trust FnW to manage 
-            their remote operations successfully.
+            انضم إلى آلاف الفرق حول العالم التي تثق في FnW لإدارة عملياتها عن بُعد بنجاح.
           </p>
         </div>
         
@@ -56,7 +55,7 @@ const Testimonials = () => {
                     {testimonial.name}
                   </h4>
                   <p className="text-sm text-text-muted">
-                    {testimonial.role} at {testimonial.company}
+                    {testimonial.role} في {testimonial.company}
                   </p>
                 </div>
               </CardContent>

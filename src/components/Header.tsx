@@ -9,23 +9,23 @@ const Header = () => {
             FnW
           </div>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-reverse space-x-8">
             <a href="#features" className="text-foreground hover:text-primary transition-colors">
-              Features
+              المميزات
             </a>
             <a href="#solutions" className="text-foreground hover:text-primary transition-colors">
-              Solutions
+              الحلول
             </a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">
-              Contact Us
+              تواصل معنا
             </a>
             <a href="#about" className="text-foreground hover:text-primary transition-colors">
-              About Us
+              من نحن
             </a>
           </div>
           
           <Button variant="default" size="default" className="shadow-button">
-            Log in
+            تسجيل الدخول
           </Button>
         </nav>
       </div>

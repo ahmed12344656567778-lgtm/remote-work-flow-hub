@@ -6,16 +6,16 @@ const Hero = () => {
     <section className="bg-background py-20 lg:py-28">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-right">
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-text-hero mb-6 leading-tight">
-              Manage Your Remote Team Effectively
+              أدر فريقك عن بُعد بفعالية
             </h1>
             <p className="text-lg lg:text-xl text-text-muted mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
-              System Helps You Streamline Communication, Track Progress, and 
-              Ensure Everyone Stays Aligned, No Matter Where They are.
+              نظام يساعدك على تبسيط التواصل، تتبع التقدم، والتأكد من أن الجميع متناغم، 
+              بغض النظر عن مكان وجودهم.
             </p>
             <Button size="lg" className="shadow-button text-lg px-8 py-4">
-              Get Started
+              ابدأ الآن
             </Button>
           </div>
           

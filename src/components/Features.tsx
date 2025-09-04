@@ -5,33 +5,33 @@ const Features = () => {
   const features = [
     {
       icon: Users,
-      title: "Team Collaboration",
-      description: "Seamlessly collaborate with your remote team members through integrated communication tools and shared workspaces."
+      title: "التعاون الجماعي",
+      description: "تعاون بسلاسة مع أعضاء فريقك عن بُعد من خلال أدوات التواصل المتكاملة ومساحات العمل المشتركة."
     },
     {
       icon: Clock,
-      title: "Time Tracking",
-      description: "Monitor work hours, productivity, and project timelines with advanced time tracking and reporting features."
+      title: "تتبع الوقت",
+      description: "راقب ساعات العمل والإنتاجية والجداول الزمنية للمشروع بمميزات تتبع الوقت والتقارير المتقدمة."
     },
     {
       icon: BarChart3,
-      title: "Progress Analytics",
-      description: "Get detailed insights into team performance, project progress, and productivity metrics with comprehensive analytics."
+      title: "تحليلات التقدم",
+      description: "احصل على رؤى مفصلة حول أداء الفريق وتقدم المشروع ومقاييس الإنتاجية مع التحليلات الشاملة."
     },
     {
       icon: MessageSquare,
-      title: "Communication Hub",
-      description: "Centralize all team communications with chat, video calls, file sharing, and announcement features."
+      title: "مركز التواصل",
+      description: "اجمع جميع اتصالات الفريق مع الدردشة ومكالمات الفيديو ومشاركة الملفات وميزات الإعلانات."
     },
     {
       icon: CheckCircle,
-      title: "Task Management",
-      description: "Organize, assign, and track tasks with powerful project management tools and workflow automation."
+      title: "إدارة المهام",
+      description: "نظم وعين وتتبع المهام باستخدام أدوات إدارة المشاريع القوية وأتمتة سير العمل."
     },
     {
       icon: Shield,
-      title: "Secure Platform",
-      description: "Enterprise-grade security with end-to-end encryption, data protection, and compliance standards."
+      title: "منصة آمنة",
+      description: "أمان على مستوى المؤسسات مع التشفير من طرف إلى طرف وحماية البيانات ومعايير الامتثال."
     }
   ];
 
@@ -40,11 +40,10 @@ const Features = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
-            Powerful Features for Remote Teams
+            مميزات قوية للفرق العاملة عن بُعد
           </h2>
           <p className="text-lg text-text-muted max-w-2xl mx-auto">
-            Everything you need to manage your remote team effectively, 
-            boost productivity, and maintain seamless collaboration.
+            كل ما تحتاجه لإدارة فريقك عن بُعد بفعالية، تعزيز الإنتاجية، والحفاظ على تعاون سلس.
           </p>
         </div>
         
