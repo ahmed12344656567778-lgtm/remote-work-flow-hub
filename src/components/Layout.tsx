@@ -7,6 +7,7 @@ import {
   FileText, 
   BarChart3, 
   Users,
+  MessageSquare,
   Menu,
   X,
   Home
@@ -26,6 +27,7 @@ const Layout = () => {
     { name: "الملفات", href: "/files", icon: FileText },
     { name: "التقارير", href: "/reports", icon: BarChart3 },
     { name: "الفريق", href: "/team", icon: Users },
+    { name: "المحادثات", href: "/chat", icon: MessageSquare },
   ];
 
   return (

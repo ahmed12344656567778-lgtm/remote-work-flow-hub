@@ -12,6 +12,8 @@ import Calendar from "./pages/Calendar";
 import Files from "./pages/Files";
 import Reports from "./pages/Reports";
 import Team from "./pages/Team";
+import Auth from "./pages/Auth";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/" element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
@@ -32,6 +35,7 @@ const App = () => (
             <Route path="files" element={<Files />} />
             <Route path="reports" element={<Reports />} />
             <Route path="team" element={<Team />} />
+            <Route path="chat" element={<Chat />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
