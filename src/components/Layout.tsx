@@ -10,7 +10,12 @@ import {
   MessageSquare,
   Menu,
   X,
-  Home
+  Home,
+  Settings,
+  User,
+  Shield,
+  Activity,
+  Bell
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +33,11 @@ const Layout = () => {
     { name: "التقارير", href: "/reports", icon: BarChart3 },
     { name: "الفريق", href: "/team", icon: Users },
     { name: "المحادثات", href: "/chat", icon: MessageSquare },
+    { name: "الإشعارات", href: "/notifications", icon: Bell },
+    { name: "الملف الشخصي", href: "/profile", icon: User },
+    { name: "الإعدادات", href: "/settings", icon: Settings },
+    { name: "الأدوار والصلاحيات", href: "/roles", icon: Shield },
+    { name: "سجل الأنشطة", href: "/logs", icon: Activity },
   ];
 
   return (
