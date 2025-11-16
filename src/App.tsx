@@ -14,6 +14,11 @@ import Reports from "./pages/Reports";
 import Team from "./pages/Team";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import RolesPermissions from "./pages/RolesPermissions";
+import ActivityLogs from "./pages/ActivityLogs";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +41,11 @@ const App = () => (
             <Route path="reports" element={<Reports />} />
             <Route path="team" element={<Team />} />
             <Route path="chat" element={<Chat />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="roles" element={<RolesPermissions />} />
+            <Route path="logs" element={<ActivityLogs />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
