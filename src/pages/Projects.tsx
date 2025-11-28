@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, 
   Search, 
@@ -20,10 +22,62 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface Project {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  progress: number;
+  startDate: string;
+  endDate: string;
+  teamMembers: number;
+  tasks: number;
+  completedTasks: number;
+}
 
 const Projects = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    status: "نشط",
+    startDate: "",
+    endDate: "",
+    teamMembers: "0"
+  });
 
   const projects = [
     {
@@ -122,6 +176,61 @@ const Projects = () => {
     return matchesSearch && matchesFilter;
   });
 
+  const handleOpenDialog = (project?: Project) => {
+    if (project) {
+      setSelectedProject(project);
+      setFormData({
+        name: project.name,
+        description: project.description,
+        status: project.status,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        teamMembers: project.teamMembers.toString()
+      });
+    } else {
+      setSelectedProject(null);
+      setFormData({
+        name: "",
+        description: "",
+        status: "نشط",
+        startDate: "",
+        endDate: "",
+        teamMembers: "0"
+      });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveProject = () => {
+    if (!formData.name || !formData.description) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDialogOpen(false);
+    toast({
+      title: selectedProject ? "تم التحديث" : "تم الإضافة",
+      description: selectedProject ? "تم تحديث المشروع بنجاح" : "تم إضافة المشروع بنجاح"
+    });
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    setProjectToDelete(projectId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف المشروع بنجاح"
+    });
+  };
+
   return (
     <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
@@ -129,7 +238,7 @@ const Projects = () => {
           <h1 className="text-4xl font-bold text-foreground">المشاريع</h1>
           <p className="text-lg text-muted-foreground">إدارة وتتبع جميع مشاريع الشركة</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={() => handleOpenDialog()}>
           <Plus className="h-4 w-4" />
           مشروع جديد
         </Button>
@@ -193,10 +302,10 @@ const Projects = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>تعديل</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleOpenDialog(project)}>تعديل</DropdownMenuItem>
                     <DropdownMenuItem>عرض التفاصيل</DropdownMenuItem>
                     <DropdownMenuItem>أرشفة</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">حذف</DropdownMenuItem>
+                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteProject(project.id)}>حذف</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -253,6 +362,117 @@ const Projects = () => {
           <p className="mt-2 text-muted-foreground">لم يتم العثور على مشاريع تطابق معايير البحث</p>
         </div>
       )}
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>{selectedProject ? "تعديل المشروع" : "إضافة مشروع جديد"}</DialogTitle>
+            <DialogDescription>
+              {selectedProject ? "قم بتعديل بيانات المشروع" : "قم بإدخال تفاصيل المشروع الجديد"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">اسم المشروع *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="أدخل اسم المشروع"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">الوصف *</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="أدخل وصف المشروع"
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">حالة المشروع</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="نشط">نشط</SelectItem>
+                  <SelectItem value="مكتمل">مكتمل</SelectItem>
+                  <SelectItem value="مؤجل">مؤجل</SelectItem>
+                  <SelectItem value="مؤرشف">مؤرشف</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">تاريخ البدء</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="endDate">تاريخ الانتهاء</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="teamMembers">عدد أعضاء الفريق</Label>
+              <Input
+                id="teamMembers"
+                type="number"
+                min="0"
+                value={formData.teamMembers}
+                onChange={(e) => setFormData({ ...formData, teamMembers: e.target.value })}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleSaveProject}>
+              {selectedProject ? "حفظ التعديلات" : "إضافة المشروع"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف المشروع نهائياً وجميع البيانات المرتبطة به ولا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

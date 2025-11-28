@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Plus, 
@@ -29,11 +31,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  project: string;
+  dueDate: string;
+  createdDate: string;
+  tags: string[];
+}
 
 const Tasks = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("list");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    status: "جديدة",
+    priority: "متوسطة",
+    assignee: "",
+    project: "",
+    dueDate: "",
+    tags: ""
+  });
 
   const tasks = [
     {
@@ -153,6 +202,65 @@ const Tasks = () => {
     "متأخرة": filteredTasks.filter(task => task.status === "متأخرة")
   };
 
+  const handleOpenDialog = (task?: Task) => {
+    if (task) {
+      setSelectedTask(task);
+      setFormData({
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        assignee: task.assignee,
+        project: task.project,
+        dueDate: task.dueDate,
+        tags: task.tags.join(", ")
+      });
+    } else {
+      setSelectedTask(null);
+      setFormData({
+        title: "",
+        description: "",
+        status: "جديدة",
+        priority: "متوسطة",
+        assignee: "",
+        project: "",
+        dueDate: "",
+        tags: ""
+      });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveTask = () => {
+    if (!formData.title || !formData.description) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDialogOpen(false);
+    toast({
+      title: selectedTask ? "تم التحديث" : "تم الإضافة",
+      description: selectedTask ? "تم تحديث المهمة بنجاح" : "تم إضافة المهمة بنجاح"
+    });
+  };
+
+  const handleDeleteTask = (taskId: number) => {
+    setTaskToDelete(taskId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف المهمة بنجاح"
+    });
+  };
+
   return (
     <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
@@ -175,7 +283,7 @@ const Tasks = () => {
           >
             قائمة
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={() => handleOpenDialog()}>
             <Plus className="h-4 w-4" />
             مهمة جديدة
           </Button>
@@ -229,9 +337,9 @@ const Tasks = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>تعديل</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleOpenDialog(task)}>تعديل</DropdownMenuItem>
                             <DropdownMenuItem>تعيين</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">حذف</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteTask(task.id)}>حذف</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -318,10 +426,10 @@ const Tasks = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>تعديل المهمة</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleOpenDialog(task)}>تعديل المهمة</DropdownMenuItem>
                       <DropdownMenuItem>تغيير الحالة</DropdownMenuItem>
                       <DropdownMenuItem>إضافة تعليق</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">حذف</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteTask(task.id)}>حذف</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -338,6 +446,139 @@ const Tasks = () => {
           <p className="mt-2 text-muted-foreground">لم يتم العثور على مهام تطابق معايير البحث</p>
         </div>
       )}
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>{selectedTask ? "تعديل المهمة" : "إضافة مهمة جديدة"}</DialogTitle>
+            <DialogDescription>
+              {selectedTask ? "قم بتعديل بيانات المهمة" : "قم بإدخال تفاصيل المهمة الجديدة"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">عنوان المهمة *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="أدخل عنوان المهمة"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">الوصف *</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="أدخل وصف المهمة"
+                rows={3}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="status">الحالة</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="جديدة">جديدة</SelectItem>
+                    <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
+                    <SelectItem value="مكتملة">مكتملة</SelectItem>
+                    <SelectItem value="متأخرة">متأخرة</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="priority">الأولوية</Label>
+                <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="عالية">عالية</SelectItem>
+                    <SelectItem value="متوسطة">متوسطة</SelectItem>
+                    <SelectItem value="منخفضة">منخفضة</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="assignee">المسؤول</Label>
+              <Input
+                id="assignee"
+                value={formData.assignee}
+                onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
+                placeholder="اسم المسؤول عن المهمة"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project">المشروع</Label>
+              <Input
+                id="project"
+                value={formData.project}
+                onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+                placeholder="اسم المشروع"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">تاريخ التسليم</Label>
+              <Input
+                id="dueDate"
+                type="date"
+                value={formData.dueDate}
+                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tags">الوسوم (مفصولة بفاصلة)</Label>
+              <Input
+                id="tags"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                placeholder="تصميم, برمجة, اختبار"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleSaveTask}>
+              {selectedTask ? "حفظ التعديلات" : "إضافة المهمة"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف المهمة نهائياً ولا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
