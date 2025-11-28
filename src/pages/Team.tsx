@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Plus, 
@@ -40,12 +42,56 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  location: string;
+  status: string;
+  tasksCompleted: number;
+  tasksInProgress: number;
+  efficiency: number;
+  projects: string[];
+  permissions: string[];
+  lastActive: string;
+}
 
 const Team = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [filterDepartment, setFilterDepartment] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [memberToDelete, setMemberToDelete] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    role: "مطور",
+    department: "التطوير",
+    location: "",
+    joinDate: ""
+  });
 
   const teamMembers = [
     {
@@ -201,6 +247,63 @@ const Team = () => {
   const departments = [...new Set(teamMembers.map(member => member.department))];
   const roles = [...new Set(teamMembers.map(member => member.role))];
 
+  const handleOpenDialog = (member?: TeamMember) => {
+    if (member) {
+      setSelectedMember(member);
+      setFormData({
+        name: member.name,
+        email: member.email,
+        phone: member.phone,
+        role: member.role,
+        department: member.department,
+        location: member.location,
+        joinDate: member.joinDate
+      });
+    } else {
+      setSelectedMember(null);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        role: "مطور",
+        department: "التطوير",
+        location: "",
+        joinDate: ""
+      });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveMember = () => {
+    if (!formData.name || !formData.email || !formData.phone) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDialogOpen(false);
+    toast({
+      title: selectedMember ? "تم التحديث" : "تم الإضافة",
+      description: selectedMember ? "تم تحديث بيانات العضو بنجاح" : "تم إضافة العضو بنجاح"
+    });
+  };
+
+  const handleDeleteMember = (memberId: number) => {
+    setMemberToDelete(memberId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف العضو من الفريق بنجاح"
+    });
+  };
+
   return (
     <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
@@ -208,7 +311,7 @@ const Team = () => {
           <h1 className="text-4xl font-bold text-foreground">الفريق</h1>
           <p className="text-lg text-muted-foreground">إدارة أعضاء الفريق والأدوار</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={() => handleOpenDialog()}>
           <UserPlus className="h-4 w-4" />
           إضافة عضو جديد
         </Button>
@@ -331,9 +434,9 @@ const Team = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>عرض الملف</DropdownMenuItem>
-                    <DropdownMenuItem>تعديل الأدوار</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleOpenDialog(member)}>تعديل البيانات</DropdownMenuItem>
                     <DropdownMenuItem>إرسال رسالة</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">إلغاء التفعيل</DropdownMenuItem>
+                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteMember(member.id)}>إلغاء التفعيل</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -466,6 +569,136 @@ const Team = () => {
           <p className="mt-2 text-muted-foreground">لم يتم العثور على أعضاء يطابقون معايير البحث</p>
         </div>
       )}
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>{selectedMember ? "تعديل بيانات العضو" : "إضافة عضو جديد"}</DialogTitle>
+            <DialogDescription>
+              {selectedMember ? "قم بتعديل معلومات العضو" : "قم بإدخال معلومات العضو الجديد"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">الاسم الكامل *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="أدخل الاسم الكامل"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">البريد الإلكتروني *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="example@company.com"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">رقم الهاتف *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+966501234567"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="role">الدور الوظيفي</Label>
+                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="مدير مشروع">مدير مشروع</SelectItem>
+                    <SelectItem value="مطور واجهات أمامية">مطور واجهات أمامية</SelectItem>
+                    <SelectItem value="مطور خلفي">مطور خلفي</SelectItem>
+                    <SelectItem value="مصممة UI/UX">مصمم UI/UX</SelectItem>
+                    <SelectItem value="مختبر جودة">مختبر جودة</SelectItem>
+                    <SelectItem value="أخصائي تسويق">أخصائي تسويق</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="department">القسم</Label>
+                <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="إدارة المشاريع">إدارة المشاريع</SelectItem>
+                    <SelectItem value="التطوير">التطوير</SelectItem>
+                    <SelectItem value="التصميم">التصميم</SelectItem>
+                    <SelectItem value="الجودة">الجودة</SelectItem>
+                    <SelectItem value="التسويق">التسويق</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="location">الموقع</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="المدينة، الدولة"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="joinDate">تاريخ الانضمام</Label>
+              <Input
+                id="joinDate"
+                type="date"
+                value={formData.joinDate}
+                onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleSaveMember}>
+              {selectedMember ? "حفظ التعديلات" : "إضافة العضو"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم إلغاء تفعيل هذا العضو ولن يتمكن من الوصول إلى النظام.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              إلغاء التفعيل
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

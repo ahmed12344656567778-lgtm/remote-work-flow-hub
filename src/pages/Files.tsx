@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Upload, 
   Search, 
@@ -33,11 +34,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface FileItem {
+  id: number;
+  name: string;
+  type: string;
+  size: string;
+  uploadDate: string;
+  uploadedBy: string;
+  project: string;
+  downloads: number;
+  shared: boolean;
+}
 
 const Files = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [filterType, setFilterType] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+  const [fileToDelete, setFileToDelete] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "document",
+    project: "",
+    shared: false
+  });
 
   const files = [
     {
@@ -200,6 +243,57 @@ const Files = () => {
     return sum + (file.size.includes('KB') ? sizeInMB / 1024 : sizeInMB);
   }, 0);
 
+  const handleOpenDialog = (file?: FileItem) => {
+    if (file) {
+      setSelectedFile(file);
+      setFormData({
+        name: file.name,
+        type: file.type,
+        project: file.project,
+        shared: file.shared
+      });
+    } else {
+      setSelectedFile(null);
+      setFormData({
+        name: "",
+        type: "document",
+        project: "",
+        shared: false
+      });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveFile = () => {
+    if (!formData.name || !formData.project) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDialogOpen(false);
+    toast({
+      title: selectedFile ? "تم التحديث" : "تم الرفع",
+      description: selectedFile ? "تم تحديث بيانات الملف بنجاح" : "تم رفع الملف بنجاح"
+    });
+  };
+
+  const handleDeleteFile = (fileId: number) => {
+    setFileToDelete(fileId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setIsDeleteDialogOpen(false);
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف الملف بنجاح"
+    });
+  };
+
   return (
     <div className="space-y-8" dir="rtl">
       <div className="flex items-center justify-between">
@@ -222,7 +316,7 @@ const Files = () => {
           >
             <List className="h-4 w-4" />
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={() => handleOpenDialog()}>
             <Upload className="h-4 w-4" />
             رفع ملف
           </Button>
@@ -321,11 +415,14 @@ const Files = () => {
                           <Download className="h-4 w-4 ml-2" />
                           تحميل
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenDialog(file)}>
+                          تعديل البيانات
+                        </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Share className="h-4 w-4 ml-2" />
                           مشاركة
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">حذف</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFile(file.id)}>حذف</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -417,11 +514,14 @@ const Files = () => {
                               <Download className="h-4 w-4 ml-2" />
                               تحميل
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleOpenDialog(file)}>
+                              تعديل البيانات
+                            </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Share className="h-4 w-4 ml-2" />
                               مشاركة
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">حذف</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFile(file.id)}>حذف</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
@@ -441,6 +541,113 @@ const Files = () => {
           <p className="mt-2 text-muted-foreground">لم يتم العثور على ملفات تطابق معايير البحث</p>
         </div>
       )}
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>{selectedFile ? "تعديل بيانات الملف" : "رفع ملف جديد"}</DialogTitle>
+            <DialogDescription>
+              {selectedFile ? "قم بتعديل معلومات الملف" : "قم بإدخال معلومات الملف الجديد"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {!selectedFile && (
+              <div className="space-y-2">
+                <Label htmlFor="file">الملف *</Label>
+                <Input
+                  id="file"
+                  type="file"
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">
+                  الحد الأقصى لحجم الملف: 50 ميجابايت
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="fileName">اسم الملف *</Label>
+              <Input
+                id="fileName"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="أدخل اسم الملف"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fileType">نوع الملف</Label>
+              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="document">مستند</SelectItem>
+                  <SelectItem value="image">صورة</SelectItem>
+                  <SelectItem value="video">فيديو</SelectItem>
+                  <SelectItem value="design">تصميم</SelectItem>
+                  <SelectItem value="archive">أرشيف</SelectItem>
+                  <SelectItem value="database">قاعدة بيانات</SelectItem>
+                  <SelectItem value="spreadsheet">جدول بيانات</SelectItem>
+                  <SelectItem value="presentation">عرض تقديمي</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project">المشروع *</Label>
+              <Input
+                id="project"
+                value={formData.project}
+                onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+                placeholder="اسم المشروع المرتبط بالملف"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 space-x-reverse">
+              <input
+                type="checkbox"
+                id="shared"
+                checked={formData.shared}
+                onChange={(e) => setFormData({ ...formData, shared: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="shared" className="cursor-pointer">
+                مشاركة الملف مع الفريق
+              </Label>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              إلغاء
+            </Button>
+            <Button onClick={handleSaveFile}>
+              {selectedFile ? "حفظ التعديلات" : "رفع الملف"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف الملف نهائياً ولا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
