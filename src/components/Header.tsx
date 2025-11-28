@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="w-full bg-background border-b border-border shadow-soft">
       <div className="container mx-auto px-6 py-4">
@@ -24,7 +27,12 @@ const Header = () => {
             </a>
           </div>
           
-          <Button variant="default" size="default" className="shadow-button">
+          <Button 
+            variant="default" 
+            size="default" 
+            className="shadow-button"
+            onClick={() => navigate("/auth")}
+          >
             تسجيل الدخول
           </Button>
         </nav>
