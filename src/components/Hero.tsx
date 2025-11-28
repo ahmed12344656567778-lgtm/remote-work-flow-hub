@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-dashboard.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-background py-20 lg:py-28">
       <div className="container mx-auto px-6">
@@ -14,7 +17,11 @@ const Hero = () => {
               نظام يساعدك على تبسيط التواصل، تتبع التقدم، والتأكد من أن الجميع متناغم، 
               بغض النظر عن مكان وجودهم.
             </p>
-            <Button size="lg" className="shadow-button text-lg px-8 py-4">
+            <Button 
+              size="lg" 
+              className="shadow-button text-lg px-8 py-4"
+              onClick={() => navigate("/auth")}
+            >
               ابدأ الآن
             </Button>
           </div>
