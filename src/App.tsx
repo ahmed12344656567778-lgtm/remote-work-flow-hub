@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
+import ProjectDetails from "./pages/ProjectDetails";
 import Tasks from "./pages/Tasks";
 import Calendar from "./pages/Calendar";
 import Files from "./pages/Files";
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/" element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
+            <Route path="projects/:id" element={<ProjectDetails />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="files" element={<Files />} />
