@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +15,13 @@ import {
   Users, 
   MoreVertical,
   FolderOpen,
-  Archive
+  Archive,
+  Check,
+  ChevronsUpDown
 } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +63,8 @@ interface Project {
   progress: number;
   startDate: string;
   endDate: string;
+  supervisor: string;
+  supervisorName: string;
   teamMembers: number;
   tasks: number;
   completedTasks: number;
@@ -64,20 +72,31 @@ interface Project {
 
 const Projects = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     status: "نشط",
     startDate: "",
     endDate: "",
-    teamMembers: "0"
+    supervisor: ""
   });
+
+  // قائمة المستخدمين المتاحين كمشرفين
+  const availableSupervisors = [
+    { id: "1", name: "أحمد محمد" },
+    { id: "2", name: "فاطمة علي" },
+    { id: "3", name: "محمد خالد" },
+    { id: "4", name: "سارة أحمد" },
+    { id: "5", name: "عمر حسن" }
+  ];
 
   const projects = [
     {
@@ -88,6 +107,8 @@ const Projects = () => {
       progress: 75,
       startDate: "2024-01-01",
       endDate: "2024-01-15",
+      supervisor: "1",
+      supervisorName: "أحمد محمد",
       teamMembers: 5,
       tasks: 12,
       completedTasks: 9
@@ -100,6 +121,8 @@ const Projects = () => {
       progress: 45,
       startDate: "2024-01-10",
       endDate: "2024-02-20",
+      supervisor: "2",
+      supervisorName: "فاطمة علي",
       teamMembers: 8,
       tasks: 20,
       completedTasks: 9
@@ -112,6 +135,8 @@ const Projects = () => {
       progress: 100,
       startDate: "2023-12-01",
       endDate: "2024-01-10",
+      supervisor: "3",
+      supervisorName: "محمد خالد",
       teamMembers: 4,
       tasks: 15,
       completedTasks: 15
@@ -124,6 +149,8 @@ const Projects = () => {
       progress: 30,
       startDate: "2024-02-01",
       endDate: "2024-03-01",
+      supervisor: "4",
+      supervisorName: "سارة أحمد",
       teamMembers: 6,
       tasks: 18,
       completedTasks: 5
@@ -136,6 +163,8 @@ const Projects = () => {
       progress: 60,
       startDate: "2024-01-05",
       endDate: "2024-01-25",
+      supervisor: "5",
+      supervisorName: "عمر حسن",
       teamMembers: 3,
       tasks: 8,
       completedTasks: 5
@@ -148,6 +177,8 @@ const Projects = () => {
       progress: 100,
       startDate: "2023-11-01",
       endDate: "2023-12-15",
+      supervisor: "1",
+      supervisorName: "أحمد محمد",
       teamMembers: 2,
       tasks: 10,
       completedTasks: 10
@@ -185,7 +216,7 @@ const Projects = () => {
         status: project.status,
         startDate: project.startDate,
         endDate: project.endDate,
-        teamMembers: project.teamMembers.toString()
+        supervisor: project.supervisor
       });
     } else {
       setSelectedProject(null);
@@ -195,14 +226,14 @@ const Projects = () => {
         status: "نشط",
         startDate: "",
         endDate: "",
-        teamMembers: "0"
+        supervisor: ""
       });
     }
     setIsDialogOpen(true);
   };
 
   const handleSaveProject = () => {
-    if (!formData.name || !formData.description) {
+    if (!formData.name || !formData.description || !formData.supervisor) {
       toast({
         title: "خطأ",
         description: "يرجى ملء جميع الحقول المطلوبة",
@@ -303,7 +334,7 @@ const Projects = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleOpenDialog(project)}>تعديل</DropdownMenuItem>
-                    <DropdownMenuItem>عرض التفاصيل</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/projects/${project.id}`)}>عرض التفاصيل</DropdownMenuItem>
                     <DropdownMenuItem>أرشفة</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteProject(project.id)}>حذف</DropdownMenuItem>
                   </DropdownMenuContent>
@@ -343,7 +374,7 @@ const Projects = () => {
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button size="sm" className="flex-1">
+                <Button size="sm" className="flex-1" onClick={() => navigate(`/projects/${project.id}`)}>
                   عرض التفاصيل
                 </Button>
                 <Button size="sm" variant="outline">
@@ -410,6 +441,52 @@ const Projects = () => {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="supervisor">المشرف على المشروع *</Label>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between text-right"
+                  >
+                    {formData.supervisor
+                      ? availableSupervisors.find((supervisor) => supervisor.id === formData.supervisor)?.name
+                      : "اختر المشرف..."}
+                    <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="ابحث عن مشرف..." className="text-right" />
+                    <CommandEmpty>لم يتم العثور على مشرف</CommandEmpty>
+                    <CommandGroup>
+                      {availableSupervisors.map((supervisor) => (
+                        <CommandItem
+                          key={supervisor.id}
+                          value={supervisor.name}
+                          onSelect={() => {
+                            setFormData({ ...formData, supervisor: supervisor.id });
+                            setOpen(false);
+                          }}
+                          className="text-right"
+                        >
+                          <Check
+                            className={cn(
+                              "ml-2 h-4 w-4",
+                              formData.supervisor === supervisor.id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {supervisor.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate">تاريخ البدء</Label>
@@ -430,18 +507,6 @@ const Projects = () => {
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="teamMembers">عدد أعضاء الفريق</Label>
-              <Input
-                id="teamMembers"
-                type="number"
-                min="0"
-                value={formData.teamMembers}
-                onChange={(e) => setFormData({ ...formData, teamMembers: e.target.value })}
-                placeholder="0"
-              />
             </div>
           </div>
 
