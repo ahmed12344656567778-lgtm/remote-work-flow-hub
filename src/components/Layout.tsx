@@ -31,6 +31,7 @@ const Layout = () => {
     { name: "التقويم", href: "/calendar", icon: Calendar },
     { name: "الملفات", href: "/files", icon: FileText },
     { name: "التقارير", href: "/reports", icon: BarChart3 },
+    { name: "المستخدمين", href: "/users", icon: Users },
     { name: "الفريق", href: "/team", icon: Users },
     { name: "المحادثات", href: "/chat", icon: MessageSquare },
     { name: "الإشعارات", href: "/notifications", icon: Bell },

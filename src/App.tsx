@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import RolesPermissions from "./pages/RolesPermissions";
 import ActivityLogs from "./pages/ActivityLogs";
 import Notifications from "./pages/Notifications";
+import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="calendar" element={<Calendar />} />
             <Route path="files" element={<Files />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="users" element={<Users />} />
             <Route path="team" element={<Team />} />
             <Route path="chat" element={<Chat />} />
             <Route path="settings" element={<Settings />} />

@@ -84,14 +84,24 @@ const Team = () => {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [memberToDelete, setMemberToDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    role: "مطور",
+    userId: "",
     department: "التطوير",
     location: "",
-    joinDate: ""
+    joinDate: "",
+    tasksCompleted: 0,
+    tasksInProgress: 0,
+    efficiency: 0
   });
+
+  // Mock list of users from Users page
+  const availableUsers = [
+    { id: 1, name: "أحمد محمد", email: "ahmed.mohamed@company.com", phone: "+966501234567", role: "مشرف" },
+    { id: 2, name: "فاطمة علي", email: "fatima.ali@company.com", phone: "+966507654321", role: "مدير" },
+    { id: 3, name: "محمد خالد", email: "mohamed.khaled@company.com", phone: "+966509876543", role: "موظف" },
+    { id: 4, name: "سارة أحمد", email: "sara.ahmed@company.com", phone: "+966502468135", role: "موظف" },
+    { id: 5, name: "عمر حسن", email: "omar.hassan@company.com", phone: "+966503691470", role: "مدير" },
+    { id: 6, name: "ليلى محمود", email: "layla.mahmoud@company.com", phone: "+966508024681", role: "موظف" }
+  ];
 
   const teamMembers = [
     {
@@ -251,31 +261,31 @@ const Team = () => {
     if (member) {
       setSelectedMember(member);
       setFormData({
-        name: member.name,
-        email: member.email,
-        phone: member.phone,
-        role: member.role,
+        userId: member.id.toString(),
         department: member.department,
         location: member.location,
-        joinDate: member.joinDate
+        joinDate: member.joinDate,
+        tasksCompleted: member.tasksCompleted,
+        tasksInProgress: member.tasksInProgress,
+        efficiency: member.efficiency
       });
     } else {
       setSelectedMember(null);
       setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        role: "مطور",
+        userId: "",
         department: "التطوير",
         location: "",
-        joinDate: ""
+        joinDate: "",
+        tasksCompleted: 0,
+        tasksInProgress: 0,
+        efficiency: 0
       });
     }
     setIsDialogOpen(true);
   };
 
   const handleSaveMember = () => {
-    if (!formData.name || !formData.email || !formData.phone) {
+    if (!formData.userId || !formData.department || !formData.location || !formData.joinDate) {
       toast({
         title: "خطأ",
         description: "يرجى ملء جميع الحقول المطلوبة",
@@ -287,7 +297,7 @@ const Team = () => {
     setIsDialogOpen(false);
     toast({
       title: selectedMember ? "تم التحديث" : "تم الإضافة",
-      description: selectedMember ? "تم تحديث بيانات العضو بنجاح" : "تم إضافة العضو بنجاح"
+      description: selectedMember ? "تم تحديث بيانات عضو الفريق بنجاح" : "تم إضافة عضو جديد للفريق بنجاح"
     });
   };
 
@@ -581,93 +591,126 @@ const Team = () => {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            {!selectedMember && (
+              <div className="space-y-2">
+                <Label htmlFor="userId">اختر المستخدم *</Label>
+                <Select 
+                  value={formData.userId} 
+                  onValueChange={(value) => setFormData({ ...formData, userId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر مستخدم من القائمة" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableUsers.map((user) => (
+                      <SelectItem key={user.id} value={user.id.toString()}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.name}</span>
+                          <span className="text-xs text-muted-foreground">{user.email} - {user.role}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  اختر مستخدم من قائمة المستخدمين المسجلين في النظام
+                </p>
+              </div>
+            )}
+
+            {selectedMember && (
+              <div className="space-y-2 p-4 bg-muted rounded-lg">
+                <p className="text-sm font-medium">معلومات المستخدم:</p>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>
+                      {selectedMember.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{selectedMember.name}</p>
+                    <p className="text-xs text-muted-foreground">{selectedMember.email}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="name">الاسم الكامل *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="أدخل الاسم الكامل"
-              />
+              <Label htmlFor="department">القسم *</Label>
+              <Select 
+                value={formData.department} 
+                onValueChange={(value) => setFormData({ ...formData, department: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="إدارة المشاريع">إدارة المشاريع</SelectItem>
+                  <SelectItem value="التطوير">التطوير</SelectItem>
+                  <SelectItem value="التصميم">التصميم</SelectItem>
+                  <SelectItem value="الجودة">الجودة</SelectItem>
+                  <SelectItem value="التسويق">التسويق</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">البريد الإلكتروني *</Label>
+                <Label htmlFor="location">الموقع *</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="example@company.com"
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="المدينة، الدولة"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">رقم الهاتف *</Label>
+                <Label htmlFor="joinDate">تاريخ الانضمام *</Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+966501234567"
+                  id="joinDate"
+                  type="date"
+                  value={formData.joinDate}
+                  onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="role">الدور الوظيفي</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="مدير مشروع">مدير مشروع</SelectItem>
-                    <SelectItem value="مطور واجهات أمامية">مطور واجهات أمامية</SelectItem>
-                    <SelectItem value="مطور خلفي">مطور خلفي</SelectItem>
-                    <SelectItem value="مصممة UI/UX">مصمم UI/UX</SelectItem>
-                    <SelectItem value="مختبر جودة">مختبر جودة</SelectItem>
-                    <SelectItem value="أخصائي تسويق">أخصائي تسويق</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="tasksCompleted">المهام المكتملة</Label>
+                <Input
+                  id="tasksCompleted"
+                  type="number"
+                  value={formData.tasksCompleted}
+                  onChange={(e) => setFormData({ ...formData, tasksCompleted: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="department">القسم</Label>
-                <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="إدارة المشاريع">إدارة المشاريع</SelectItem>
-                    <SelectItem value="التطوير">التطوير</SelectItem>
-                    <SelectItem value="التصميم">التصميم</SelectItem>
-                    <SelectItem value="الجودة">الجودة</SelectItem>
-                    <SelectItem value="التسويق">التسويق</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="tasksInProgress">المهام الحالية</Label>
+                <Input
+                  id="tasksInProgress"
+                  type="number"
+                  value={formData.tasksInProgress}
+                  onChange={(e) => setFormData({ ...formData, tasksInProgress: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="location">الموقع</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="المدينة، الدولة"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="joinDate">تاريخ الانضمام</Label>
-              <Input
-                id="joinDate"
-                type="date"
-                value={formData.joinDate}
-                onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="efficiency">الكفاءة %</Label>
+                <Input
+                  id="efficiency"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.efficiency}
+                  onChange={(e) => setFormData({ ...formData, efficiency: parseInt(e.target.value) || 0 })}
+                  placeholder="85"
+                />
+              </div>
             </div>
           </div>
 
