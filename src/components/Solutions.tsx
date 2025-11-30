@@ -28,10 +28,10 @@ const Solutions = () => {
     <section id="solutions" className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             حلول لكل حجم فريق
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             سواء كنت شركة ناشئة أم مؤسسة، لدينا الحل المناسب لمساعدة فريقك عن بُعد على النجاح والنمو.
           </p>
         </div>
@@ -43,15 +43,15 @@ const Solutions = () => {
                 <div className="mb-6">
                   <solution.icon className="w-16 h-16 text-primary mx-auto" />
                 </div>
-                <h3 className="text-2xl font-semibold text-text-hero mb-4">
+                <h3 className="text-2xl font-semibold text-foreground mb-4">
                   {solution.title}
                 </h3>
-                <p className="text-text-muted mb-6 leading-relaxed">
+                <p className="text-muted-foreground mb-6 leading-relaxed">
                   {solution.description}
                 </p>
                 <ul className="space-y-2 mb-8">
                   {solution.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="text-text-muted text-sm">
+                    <li key={featureIndex} className="text-muted-foreground text-sm">
                       ✓ {feature}
                     </li>
                   ))}

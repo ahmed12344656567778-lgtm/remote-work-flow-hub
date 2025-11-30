@@ -59,10 +59,10 @@ const ProductTour = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             جولة في المنتج
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             اكتشف كيف يمكن لـ FnW تحويل طريقة إدارة فريقك للعمل عن بعد من خلال جولة تفاعلية.
           </p>
           
@@ -79,7 +79,7 @@ const ProductTour = () => {
             {/* Progress Bar */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-text-muted">
+                <span className="text-sm text-muted-foreground">
                   الخطوة {currentStep + 1} من {tourSteps.length}
                 </span>
                 <Badge variant="secondary">
@@ -103,21 +103,21 @@ const ProductTour = () => {
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                       <StepIcon className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="text-2xl font-bold text-text-hero">
+                    <h3 className="text-2xl font-bold text-foreground">
                       {currentTourStep.title}
                     </h3>
                   </div>
                   
-                  <p className="text-text-muted mb-6 leading-relaxed">
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
                     {currentTourStep.description}
                   </p>
 
                   <div className="space-y-3 mb-8">
-                    <h4 className="font-semibold text-text-hero">المميزات الرئيسية:</h4>
+                    <h4 className="font-semibold text-foreground">المميزات الرئيسية:</h4>
                     {currentTourStep.features.map((feature, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        <span className="text-text-muted text-sm">{feature}</span>
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        <span className="text-muted-foreground text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -151,7 +151,7 @@ const ProductTour = () => {
                   <div className="w-full h-80 bg-card rounded-lg shadow-soft flex items-center justify-center border">
                     <div className="text-center">
                       <StepIcon className="w-24 h-24 text-primary mx-auto mb-4" />
-                      <p className="text-text-muted">معاينة {currentTourStep.title}</p>
+                      <p className="text-muted-foreground">معاينة {currentTourStep.title}</p>
                     </div>
                   </div>
                 </div>
@@ -184,10 +184,10 @@ const ProductTour = () => {
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                       <StepIcon className="w-8 h-8 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-text-hero mb-2">
+                    <h3 className="font-semibold text-foreground mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-text-muted text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {step.description.slice(0, 100)}...
                     </p>
                   </CardContent>

@@ -10,10 +10,10 @@ const Hero = () => {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-right">
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-text-hero mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-6 leading-tight">
               أدر فريقك عن بُعد بفعالية
             </h1>
-            <p className="text-lg lg:text-xl text-text-muted mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
+            <p className="text-lg lg:text-xl text-muted-foreground mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
               نظام يساعدك على تبسيط التواصل، تتبع التقدم، والتأكد من أن الجميع متناغم، 
               بغض النظر عن مكان وجودهم.
             </p>
