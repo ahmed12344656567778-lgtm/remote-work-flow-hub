@@ -37,10 +37,10 @@ const ContactForm = () => {
     <section id="contact" className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             تواصل معنا
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             هل لديك أسئلة حول FnW؟ فريقنا مستعد لمساعدتك في العثور على الحل المناسب لفريقك.
           </p>
         </div>
@@ -50,40 +50,40 @@ const ContactForm = () => {
           <div className="space-y-8">
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-text-hero">
+                <CardTitle className="flex items-center gap-3 text-foreground">
                   <Mail className="w-6 h-6 text-primary" />
                   البريد الإلكتروني
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-text-muted">info@fnw.com</p>
-                <p className="text-text-muted">support@fnw.com</p>
+                <p className="text-muted-foreground">info@fnw.com</p>
+                <p className="text-muted-foreground">support@fnw.com</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-text-hero">
+                <CardTitle className="flex items-center gap-3 text-foreground">
                   <Phone className="w-6 h-6 text-primary" />
                   الهاتف
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-text-muted">+966 11 123 4567</p>
-                <p className="text-text-muted">+966 55 987 6543</p>
+                <p className="text-muted-foreground">+966 11 123 4567</p>
+                <p className="text-muted-foreground">+966 55 987 6543</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-text-hero">
+                <CardTitle className="flex items-center gap-3 text-foreground">
                   <MessageSquare className="w-6 h-6 text-primary" />
                   الدعم الفني
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-text-muted">متوفر 24/7</p>
-                <p className="text-text-muted">استجابة سريعة خلال دقائق</p>
+                <p className="text-muted-foreground">متوفر 24/7</p>
+                <p className="text-muted-foreground">استجابة سريعة خلال دقائق</p>
               </CardContent>
             </Card>
           </div>
@@ -91,7 +91,7 @@ const ContactForm = () => {
           {/* Contact Form */}
           <Card className="border-2 border-border shadow-soft">
             <CardHeader>
-              <CardTitle className="text-text-hero">أرسل لنا رسالة</CardTitle>
+              <CardTitle className="text-foreground">أرسل لنا رسالة</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">

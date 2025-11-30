@@ -87,13 +87,13 @@ const NotificationSystem = () => {
 
   const getTypeColor = (type: string) => {
     const colors = {
-      task: "bg-blue-100 text-blue-700",
-      meeting: "bg-green-100 text-green-700",
-      message: "bg-purple-100 text-purple-700",
-      update: "bg-orange-100 text-orange-700",
-      team: "bg-pink-100 text-pink-700"
+      task: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+      meeting: "bg-green-500/10 text-green-600 dark:text-green-400",
+      message: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+      update: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+      team: "bg-pink-500/10 text-pink-600 dark:text-pink-400"
     };
-    return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-700";
+    return colors[type as keyof typeof colors] || "bg-muted text-muted-foreground";
   };
 
   const getTypeLabel = (type: string) => {
@@ -110,13 +110,13 @@ const NotificationSystem = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <section className="py-20 bg-feature-bg">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             نظام الإشعارات الذكي
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             ابقَ على اطلاع دائم بأهم التحديثات والمهام في فريقك مع نظام إشعارات متقدم وقابل للتخصيص.
           </p>
         </div>
@@ -127,7 +127,7 @@ const NotificationSystem = () => {
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-3 text-text-hero">
+                  <CardTitle className="flex items-center gap-3 text-foreground">
                     <BellRing className="w-6 h-6 text-primary" />
                     الإشعارات
                     {unreadCount > 0 && (
@@ -166,7 +166,7 @@ const NotificationSystem = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className={`font-semibold text-sm ${
-                              notification.read ? 'text-text-muted' : 'text-text-hero'
+                              notification.read ? 'text-muted-foreground' : 'text-foreground'
                             }`}>
                               {notification.title}
                             </h3>
@@ -180,12 +180,10 @@ const NotificationSystem = () => {
                               <div className="w-2 h-2 bg-primary rounded-full" />
                             )}
                           </div>
-                          <p className={`text-xs mb-2 ${
-                            notification.read ? 'text-text-muted' : 'text-text-muted'
-                          }`}>
+                          <p className={`text-xs mb-2 text-muted-foreground`}>
                             {notification.message}
                           </p>
-                          <span className="text-xs text-text-muted">
+                          <span className="text-xs text-muted-foreground">
                             {notification.time}
                           </span>
                         </div>
@@ -201,17 +199,17 @@ const NotificationSystem = () => {
           <div className="space-y-6">
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-text-hero">
+                <CardTitle className="flex items-center gap-3 text-foreground">
                   <Settings className="w-6 h-6 text-primary" />
                   إعدادات الإشعارات
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-text-hero mb-4">طرق التنبيه:</h4>
+                  <h4 className="font-semibold text-foreground mb-4">طرق التنبيه:</h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">البريد الإلكتروني</span>
+                      <span className="text-muted-foreground">البريد الإلكتروني</span>
                       <Switch 
                         checked={settings.email}
                         onCheckedChange={(checked) => 
@@ -220,7 +218,7 @@ const NotificationSystem = () => {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">إشعارات فورية</span>
+                      <span className="text-muted-foreground">إشعارات فورية</span>
                       <Switch 
                         checked={settings.push}
                         onCheckedChange={(checked) => 
@@ -229,7 +227,7 @@ const NotificationSystem = () => {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">رسائل نصية</span>
+                      <span className="text-muted-foreground">رسائل نصية</span>
                       <Switch 
                         checked={settings.sms}
                         onCheckedChange={(checked) => 
@@ -241,10 +239,10 @@ const NotificationSystem = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-text-hero mb-4">أنواع الإشعارات:</h4>
+                  <h4 className="font-semibold text-foreground mb-4">أنواع الإشعارات:</h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">المهام الجديدة</span>
+                      <span className="text-muted-foreground">المهام الجديدة</span>
                       <Switch 
                         checked={settings.tasks}
                         onCheckedChange={(checked) => 
@@ -253,7 +251,7 @@ const NotificationSystem = () => {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">الاجتماعات</span>
+                      <span className="text-muted-foreground">الاجتماعات</span>
                       <Switch 
                         checked={settings.meetings}
                         onCheckedChange={(checked) => 
@@ -262,7 +260,7 @@ const NotificationSystem = () => {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">الرسائل</span>
+                      <span className="text-muted-foreground">الرسائل</span>
                       <Switch 
                         checked={settings.messages}
                         onCheckedChange={(checked) => 
@@ -271,7 +269,7 @@ const NotificationSystem = () => {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-text-muted">تحديثات المشروع</span>
+                      <span className="text-muted-foreground">تحديثات المشروع</span>
                       <Switch 
                         checked={settings.updates}
                         onCheckedChange={(checked) => 
@@ -287,22 +285,22 @@ const NotificationSystem = () => {
             {/* Quick Stats */}
             <Card className="border-2 border-border shadow-soft">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-text-hero">
+                <CardTitle className="flex items-center gap-3 text-foreground">
                   <Bell className="w-6 h-6 text-primary" />
                   إحصائيات سريعة
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-text-muted">غير مقروءة:</span>
+                  <span className="text-muted-foreground">غير مقروءة:</span>
                   <Badge variant="destructive">{unreadCount}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-text-muted">اليوم:</span>
+                  <span className="text-muted-foreground">اليوم:</span>
                   <Badge variant="secondary">8</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-text-muted">هذا الأسبوع:</span>
+                  <span className="text-muted-foreground">هذا الأسبوع:</span>
                   <Badge variant="secondary">24</Badge>
                 </div>
               </CardContent>

@@ -36,13 +36,13 @@ const Features = () => {
   ];
 
   return (
-    <section id="features" className="py-20 bg-feature-bg">
+    <section id="features" className="py-20 bg-muted/30">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             مميزات قوية للفرق العاملة عن بُعد
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             كل ما تحتاجه لإدارة فريقك عن بُعد بفعالية، تعزيز الإنتاجية، والحفاظ على تعاون سلس.
           </p>
         </div>
@@ -54,10 +54,10 @@ const Features = () => {
                 <div className="mb-4">
                   <feature.icon className="w-12 h-12 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-text-hero mb-3">
+                <h3 className="text-xl font-semibold text-foreground mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-text-muted leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {feature.description}
                 </p>
               </CardContent>

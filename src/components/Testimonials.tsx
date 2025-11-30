@@ -27,13 +27,13 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="py-20 bg-feature-bg">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-text-hero mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
             ماذا يقول عملاؤنا
           </h2>
-          <p className="text-lg text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             انضم إلى آلاف الفرق حول العالم التي تثق في FnW لإدارة عملياتها عن بُعد بنجاح.
           </p>
         </div>
@@ -44,17 +44,17 @@ const Testimonials = () => {
               <CardContent className="p-8">
                 <div className="flex mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="w-5 h-5 text-yellow-500 dark:text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-text-muted mb-6 leading-relaxed italic">
+                <p className="text-muted-foreground mb-6 leading-relaxed italic">
                   "{testimonial.content}"
                 </p>
                 <div>
-                  <h4 className="font-semibold text-text-hero">
+                  <h4 className="font-semibold text-foreground">
                     {testimonial.name}
                   </h4>
-                  <p className="text-sm text-text-muted">
+                  <p className="text-sm text-muted-foreground">
                     {testimonial.role} في {testimonial.company}
                   </p>
                 </div>
