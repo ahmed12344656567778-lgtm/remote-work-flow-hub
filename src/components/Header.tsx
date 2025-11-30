@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -27,14 +28,17 @@ const Header = () => {
             </a>
           </div>
           
-          <Button 
-            variant="default" 
-            size="default" 
-            className="shadow-button"
-            onClick={() => navigate("/auth")}
-          >
-            تسجيل الدخول
-          </Button>
+          <div className="flex items-center space-x-reverse space-x-4">
+            <ThemeToggle />
+            <Button 
+              variant="default" 
+              size="default" 
+              className="shadow-button"
+              onClick={() => navigate("/auth")}
+            >
+              تسجيل الدخول
+            </Button>
+          </div>
         </nav>
       </div>
     </header>
