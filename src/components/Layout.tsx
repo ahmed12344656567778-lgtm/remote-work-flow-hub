@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -109,6 +110,7 @@ const Layout = () => {
               <div className="text-sm text-muted-foreground">
                 مرحباً بك في نظام إدارة العمل عن بُعد
               </div>
+              <ThemeToggle />
             </div>
           </div>
         </header>
