@@ -86,7 +86,7 @@ const ProductTour = () => {
                   {Math.round(((currentStep + 1) / tourSteps.length) * 100)}%
                 </Badge>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2" dir="rtl">
                 <div 
                   className="bg-primary h-2 rounded-full transition-all duration-500"
                   style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
