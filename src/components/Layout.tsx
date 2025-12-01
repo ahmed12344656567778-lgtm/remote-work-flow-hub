@@ -18,11 +18,14 @@ import {
   Bell
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navigation = [
     { name: "الصفحة الرئيسية", href: "/", icon: Home },
@@ -110,6 +113,17 @@ const Layout = () => {
               <div className="text-sm text-muted-foreground">
                 مرحباً بك في نظام إدارة العمل عن بُعد
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={() => navigate("/notifications")}
+              >
+                <Bell className="h-5 w-5" />
+                <Badge className="absolute -top-1 -left-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  3
+                </Badge>
+              </Button>
               <ThemeToggle />
             </div>
           </div>
