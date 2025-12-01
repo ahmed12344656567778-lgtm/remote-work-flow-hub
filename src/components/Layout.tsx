@@ -46,7 +46,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex" dir="rtl">
+    <div className="h-screen bg-background flex overflow-hidden" dir="rtl">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -56,10 +56,11 @@ const Layout = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-card shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+      <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-card shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex flex-col ${
         sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
       }`}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-border">
+        {/* Sidebar Header - Fixed */}
+        <div className="flex items-center justify-between h-16 px-6 border-b border-border flex-shrink-0">
           <h1 className="text-xl font-bold text-primary">إدارة العمل</h1>
           <Button
             variant="ghost"
@@ -71,7 +72,8 @@ const Layout = () => {
           </Button>
         </div>
         
-        <nav className="p-4 space-y-2 h-full overflow-y-auto">
+        {/* Sidebar Navigation - Scrollable */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navigation.map((item) => {
             const Icon = item.icon;
             return (
@@ -96,8 +98,8 @@ const Layout = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header - Fixed */}
         <header className="bg-card shadow-sm border-b border-border h-16 flex-shrink-0">
           <div className="flex items-center justify-between h-full px-6">
             <div className="flex items-center gap-4">
@@ -132,8 +134,8 @@ const Layout = () => {
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 p-6 overflow-auto">
+        {/* Page content - Scrollable */}
+        <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>
