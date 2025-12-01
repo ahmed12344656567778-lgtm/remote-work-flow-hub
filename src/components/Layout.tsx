@@ -100,19 +100,22 @@ const Layout = () => {
         {/* Header */}
         <header className="bg-card shadow-sm border-b border-border h-16 flex-shrink-0">
           <div className="flex items-center justify-between h-full px-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-            
-            <div className="flex items-center space-x-reverse space-x-4">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+              
+              <div className="text-sm text-muted-foreground hidden md:block">
                 مرحباً بك في نظام إدارة العمل عن بُعد
               </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
