@@ -28,10 +28,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Notification {
@@ -71,13 +73,8 @@ const Layout = () => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "success": return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "warning": return <AlertCircle className="h-4 w-4 text-yellow-500" />;
-      case "error": return <AlertCircle className="h-4 w-4 text-red-500" />;
-      default: return <Info className="h-4 w-4 text-blue-500" />;
-    }
+  const deleteAllNotifications = () => {
+    setNotifications([]);
   };
 
   const navigation = [
@@ -171,8 +168,8 @@ const Layout = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
-                <PopoverTrigger asChild>
+              <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+                <SheetTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -185,66 +182,96 @@ const Layout = () => {
                       </Badge>
                     )}
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 p-0 bg-popover border border-border shadow-lg" align="end" dir="rtl">
-                  <div className="flex items-center justify-between p-4 border-b border-border">
-                    <h3 className="font-semibold text-foreground">الإشعارات</h3>
-                    {unreadCount > 0 && (
-                      <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
-                        <Check className="h-3 w-3 ml-1" />
-                        تعليم الكل كمقروء
-                      </Button>
-                    )}
-                  </div>
-                  <ScrollArea className="h-80">
+                </SheetTrigger>
+                <SheetContent side="left" className="w-96 p-0" dir="rtl">
+                  <SheetHeader className="p-4 border-b border-border">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <SheetTitle className="text-lg font-semibold">الإشعارات</SheetTitle>
+                        {unreadCount > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {unreadCount} جديد
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      {unreadCount > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={markAllAsRead} 
+                          className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          تعليم الكل كمقروء
+                        </Button>
+                      )}
+                      {notifications.length > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={deleteAllNotifications} 
+                          className="text-xs text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3 w-3 ml-1" />
+                          حذف الكل
+                        </Button>
+                      )}
+                    </div>
+                  </SheetHeader>
+                  
+                  <ScrollArea className="h-[calc(100vh-180px)]">
                     {notifications.length === 0 ? (
-                      <div className="p-4 text-center text-muted-foreground">
-                        لا توجد إشعارات
+                      <div className="p-8 text-center text-muted-foreground">
+                        <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>لا توجد إشعارات</p>
                       </div>
                     ) : (
                       <div className="divide-y divide-border">
                         {notifications.map((notification) => (
                           <div
                             key={notification.id}
-                            className={`p-4 hover:bg-accent/50 transition-colors ${
-                              !notification.read ? 'bg-accent/30' : ''
+                            className={`p-4 transition-colors ${
+                              !notification.read ? 'bg-accent/30' : 'bg-background'
                             }`}
                           >
-                            <div className="flex items-start gap-3">
-                              <div className="mt-1">
-                                {getNotificationIcon(notification.type)}
-                              </div>
+                            <div className="flex items-start justify-between gap-3">
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                  {notification.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                <div className="flex items-center gap-2">
+                                  <p className={`text-sm font-semibold ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                    {notification.title}
+                                  </p>
+                                  {!notification.read && (
+                                    <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-1">
                                   {notification.message}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-2">
                                   {notification.time}
                                 </p>
                               </div>
-                              <div className="flex gap-1">
+                              <div className="flex items-center gap-1 flex-shrink-0">
                                 {!notification.read && (
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-7 w-7"
+                                    className="h-8 w-8"
                                     onClick={() => markAsRead(notification.id)}
                                     title="تعليم كمقروء"
                                   >
-                                    <Check className="h-3 w-3" />
+                                    <Check className="h-4 w-4" />
                                   </Button>
                                 )}
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-destructive hover:text-destructive"
+                                  className="h-8 w-8"
                                   onClick={() => deleteNotification(notification.id)}
                                   title="حذف"
                                 >
-                                  <Trash2 className="h-3 w-3" />
+                                  <X className="h-4 w-4" />
                                 </Button>
                               </div>
                             </div>
@@ -253,10 +280,11 @@ const Layout = () => {
                       </div>
                     )}
                   </ScrollArea>
-                  <div className="p-3 border-t border-border">
+                  
+                  <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
                     <Button
                       variant="ghost"
-                      className="w-full text-sm"
+                      className="w-full text-primary hover:text-primary"
                       onClick={() => {
                         setNotificationsOpen(false);
                         navigate("/notifications");
@@ -265,8 +293,8 @@ const Layout = () => {
                       عرض جميع الإشعارات
                     </Button>
                   </div>
-                </PopoverContent>
-              </Popover>
+                </SheetContent>
+              </Sheet>
               <ThemeToggle />
             </div>
           </div>
