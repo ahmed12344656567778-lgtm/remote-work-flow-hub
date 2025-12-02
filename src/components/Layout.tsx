@@ -15,17 +15,70 @@ import {
   User,
   Shield,
   Activity,
-  Bell
+  Bell,
+  Check,
+  Trash2,
+  AlertCircle,
+  Info,
+  CheckCircle
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  type: "info" | "success" | "warning" | "error";
+  read: boolean;
+  time: string;
+}
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const navigate = useNavigate();
+
+  const [notifications, setNotifications] = useState<Notification[]>([
+    { id: 1, title: "مهمة جديدة", message: "تم تعيين مهمة جديدة لك", type: "info", read: false, time: "منذ 5 دقائق" },
+    { id: 2, title: "تم إكمال المشروع", message: "تم إكمال مشروع التصميم بنجاح", type: "success", read: false, time: "منذ ساعة" },
+    { id: 3, title: "تنبيه موعد", message: "اجتماع الفريق بعد 30 دقيقة", type: "warning", read: false, time: "منذ ساعتين" },
+    { id: 4, title: "رسالة جديدة", message: "لديك رسالة جديدة من أحمد", type: "info", read: true, time: "منذ 3 ساعات" },
+  ]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAsRead = (id: number) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    );
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const deleteNotification = (id: number) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "success": return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case "warning": return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case "error": return <AlertCircle className="h-4 w-4 text-red-500" />;
+      default: return <Info className="h-4 w-4 text-blue-500" />;
+    }
+  };
 
   const navigation = [
     { name: "الصفحة الرئيسية", href: "/", icon: Home },
@@ -118,17 +171,102 @@ const Layout = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                onClick={() => navigate("/notifications")}
-              >
-                <Bell className="h-5 w-5" />
-                <Badge className="absolute -top-1 -left-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                  3
-                </Badge>
-              </Button>
+              <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                  >
+                    <Bell className="h-5 w-5" />
+                    {unreadCount > 0 && (
+                      <Badge className="absolute -top-1 -left-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0 bg-popover border border-border shadow-lg" align="end" dir="rtl">
+                  <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h3 className="font-semibold text-foreground">الإشعارات</h3>
+                    {unreadCount > 0 && (
+                      <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
+                        <Check className="h-3 w-3 ml-1" />
+                        تعليم الكل كمقروء
+                      </Button>
+                    )}
+                  </div>
+                  <ScrollArea className="h-80">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground">
+                        لا توجد إشعارات
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-border">
+                        {notifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className={`p-4 hover:bg-accent/50 transition-colors ${
+                              !notification.read ? 'bg-accent/30' : ''
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="mt-1">
+                                {getNotificationIcon(notification.type)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                  {notification.title}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {notification.time}
+                                </p>
+                              </div>
+                              <div className="flex gap-1">
+                                {!notification.read && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={() => markAsRead(notification.id)}
+                                    title="تعليم كمقروء"
+                                  >
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive hover:text-destructive"
+                                  onClick={() => deleteNotification(notification.id)}
+                                  title="حذف"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                  <div className="p-3 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      className="w-full text-sm"
+                      onClick={() => {
+                        setNotificationsOpen(false);
+                        navigate("/notifications");
+                      }}
+                    >
+                      عرض جميع الإشعارات
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <ThemeToggle />
             </div>
           </div>
