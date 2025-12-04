@@ -28,6 +28,12 @@ const Header = () => {
             <a href="#about" className="text-foreground hover:text-primary transition-colors">
               من نحن
             </a>
+            <span 
+              onClick={() => navigate("/dashboard")} 
+              className="text-foreground hover:text-primary transition-colors cursor-pointer"
+            >
+              لوحة التحكم
+            </span>
           </div>
           
           <div className="flex items-center space-x-reverse space-x-4">
@@ -42,13 +48,6 @@ const Header = () => {
               <Badge className="absolute -top-1 -left-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
                 3
               </Badge>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="default"
-              onClick={() => navigate("/dashboard")}
-            >
-              لوحة التحكم
             </Button>
             <Button 
               variant="default" 
