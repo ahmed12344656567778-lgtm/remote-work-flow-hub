@@ -10,17 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, 
   Search, 
-  Filter, 
   Calendar, 
   Users, 
   MoreVertical,
   FolderOpen,
-  Archive,
-  Check,
-  ChevronsUpDown
+  Check
 } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -79,7 +74,8 @@ const Projects = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
+  const [supervisorSearch, setSupervisorSearch] = useState("");
+  const [showSupervisorDropdown, setShowSupervisorDropdown] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -218,6 +214,7 @@ const Projects = () => {
         endDate: project.endDate,
         supervisor: project.supervisor
       });
+      setSupervisorSearch(project.supervisorName);
     } else {
       setSelectedProject(null);
       setFormData({
@@ -228,7 +225,9 @@ const Projects = () => {
         endDate: "",
         supervisor: ""
       });
+      setSupervisorSearch("");
     }
+    setShowSupervisorDropdown(false);
     setIsDialogOpen(true);
   };
 
@@ -441,50 +440,59 @@ const Projects = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="supervisor">المشرف على المشروع *</Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between text-right"
-                  >
-                    {formData.supervisor
-                      ? availableSupervisors.find((supervisor) => supervisor.id === formData.supervisor)?.name
-                      : "اختر المشرف..."}
-                    <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="ابحث عن مشرف..." className="text-right" />
-                    <CommandEmpty>لم يتم العثور على مشرف</CommandEmpty>
-                    <CommandGroup>
-                      {availableSupervisors.map((supervisor) => (
-                        <CommandItem
-                          key={supervisor.id}
-                          value={supervisor.name}
-                          onSelect={() => {
-                            setFormData({ ...formData, supervisor: supervisor.id });
-                            setOpen(false);
-                          }}
-                          className="text-right"
-                        >
-                          <Check
-                            className={cn(
-                              "ml-2 h-4 w-4",
-                              formData.supervisor === supervisor.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {supervisor.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <Input
+                id="supervisor"
+                value={supervisorSearch}
+                onChange={(e) => {
+                  setSupervisorSearch(e.target.value);
+                  setShowSupervisorDropdown(true);
+                  if (!e.target.value) {
+                    setFormData({ ...formData, supervisor: "" });
+                  }
+                }}
+                onFocus={() => setShowSupervisorDropdown(true)}
+                placeholder="ابحث عن مشرف بالاسم..."
+                className="text-right"
+              />
+              {showSupervisorDropdown && (
+                <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                  {availableSupervisors
+                    .filter((supervisor) =>
+                      supervisor.name.toLowerCase().includes(supervisorSearch.toLowerCase())
+                    )
+                    .map((supervisor) => (
+                      <div
+                        key={supervisor.id}
+                        className={cn(
+                          "px-3 py-2 cursor-pointer hover:bg-accent text-right flex items-center justify-between",
+                          formData.supervisor === supervisor.id && "bg-accent"
+                        )}
+                        onClick={() => {
+                          setFormData({ ...formData, supervisor: supervisor.id });
+                          setSupervisorSearch(supervisor.name);
+                          setShowSupervisorDropdown(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "h-4 w-4",
+                            formData.supervisor === supervisor.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <span>{supervisor.name}</span>
+                      </div>
+                    ))}
+                  {availableSupervisors.filter((supervisor) =>
+                    supervisor.name.toLowerCase().includes(supervisorSearch.toLowerCase())
+                  ).length === 0 && (
+                    <div className="px-3 py-2 text-muted-foreground text-right">
+                      لم يتم العثور على مشرف
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
