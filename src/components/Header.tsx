@@ -44,6 +44,13 @@ const Header = () => {
               </Badge>
             </Button>
             <Button 
+              variant="outline" 
+              size="default"
+              onClick={() => navigate("/dashboard")}
+            >
+              لوحة التحكم
+            </Button>
+            <Button 
               variant="default" 
               size="default" 
               className="shadow-button"
