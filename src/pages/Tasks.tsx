@@ -1,29 +1,8 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Calendar, 
-  User, 
-  MoreVertical,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  Kanban
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Plus, Search, Kanban, CheckCircle2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -31,38 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  assignee: string;
-  project: string;
-  dueDate: string;
-  createdDate: string;
-  tags: string[];
-}
+import TaskCard, { Task } from "@/components/tasks/TaskCard";
+import { TaskFormDialog, TaskDeleteDialog, TaskFormData } from "@/components/tasks/TaskDialog";
 
 const Tasks = () => {
   const { toast } = useToast();
@@ -73,7 +23,7 @@ const Tasks = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TaskFormData>({
     title: "",
     description: "",
     status: "جديدة",
@@ -84,7 +34,7 @@ const Tasks = () => {
     tags: ""
   });
 
-  const tasks = [
+  const tasks: Task[] = [
     {
       id: 1,
       title: "تصميم واجهة المستخدم الرئيسية",
@@ -146,47 +96,6 @@ const Tasks = () => {
       tags: ["توثيق", "كتابة"]
     }
   ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "مكتملة":
-        return "bg-green-100 text-green-800";
-      case "قيد التنفيذ":
-        return "bg-blue-100 text-blue-800";
-      case "متأخرة":
-        return "bg-red-100 text-red-800";
-      case "جديدة":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "عالية":
-        return "bg-red-100 text-red-800";
-      case "متوسطة":
-        return "bg-yellow-100 text-yellow-800";
-      case "منخفضة":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "مكتملة":
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-      case "قيد التنفيذ":
-        return <Clock className="h-4 w-4 text-blue-600" />;
-      case "متأخرة":
-        return <AlertTriangle className="h-4 w-4 text-red-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -318,56 +227,21 @@ const Tasks = () => {
       {/* Kanban View */}
       {viewMode === "kanban" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Object.entries(tasksByStatus).map(([status, tasks]) => (
+          {Object.entries(tasksByStatus).map(([status, statusTasks]) => (
             <div key={status} className="space-y-4">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-foreground">{status}</h3>
-                <Badge variant="secondary">{tasks.length}</Badge>
+                <Badge variant="secondary">{statusTasks.length}</Badge>
               </div>
               <div className="space-y-3">
-                {tasks.map((task) => (
-                  <Card key={task.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <h4 className="font-medium text-sm">{task.title}</h4>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              <MoreVertical className="h-3 w-3" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleOpenDialog(task)}>تعديل</DropdownMenuItem>
-                            <DropdownMenuItem>تعيين</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteTask(task.id)}>حذف</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {task.description}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <Badge className={getPriorityColor(task.priority)} variant="outline">
-                          {task.priority}
-                        </Badge>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          {task.dueDate}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">
-                            {task.assignee.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs text-muted-foreground">{task.assignee}</span>
-                      </div>
-                    </div>
-                  </Card>
+                {statusTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    variant="kanban"
+                    onEdit={handleOpenDialog}
+                    onDelete={handleDeleteTask}
+                  />
                 ))}
               </div>
             </div>
@@ -379,62 +253,13 @@ const Tasks = () => {
       {viewMode === "list" && (
         <div className="space-y-4">
           {filteredTasks.map((task) => (
-            <Card key={task.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-3 flex-1">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(task.status)}
-                      <h3 className="font-semibold text-foreground">{task.title}</h3>
-                      <Badge className={getStatusColor(task.status)}>
-                        {task.status}
-                      </Badge>
-                      <Badge className={getPriorityColor(task.priority)} variant="outline">
-                        {task.priority}
-                      </Badge>
-                    </div>
-                    
-                    <p className="text-muted-foreground">{task.description}</p>
-                    
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span>{task.assignee}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>موعد التسليم: {task.dueDate}</span>
-                      </div>
-                      <div>
-                        <span>المشروع: {task.project}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      {task.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleOpenDialog(task)}>تعديل المهمة</DropdownMenuItem>
-                      <DropdownMenuItem>تغيير الحالة</DropdownMenuItem>
-                      <DropdownMenuItem>إضافة تعليق</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteTask(task.id)}>حذف</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardContent>
-            </Card>
+            <TaskCard
+              key={task.id}
+              task={task}
+              variant="list"
+              onEdit={handleOpenDialog}
+              onDelete={handleDeleteTask}
+            />
           ))}
         </div>
       )}
@@ -447,138 +272,21 @@ const Tasks = () => {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
-          <DialogHeader>
-            <DialogTitle>{selectedTask ? "تعديل المهمة" : "إضافة مهمة جديدة"}</DialogTitle>
-            <DialogDescription>
-              {selectedTask ? "قم بتعديل بيانات المهمة" : "قم بإدخال تفاصيل المهمة الجديدة"}
-            </DialogDescription>
-          </DialogHeader>
+      {/* Dialogs */}
+      <TaskFormDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        selectedTask={selectedTask}
+        formData={formData}
+        onFormChange={setFormData}
+        onSave={handleSaveTask}
+      />
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">عنوان المهمة *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="أدخل عنوان المهمة"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">الوصف *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="أدخل وصف المهمة"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="status">الحالة</Label>
-                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="جديدة">جديدة</SelectItem>
-                    <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
-                    <SelectItem value="مكتملة">مكتملة</SelectItem>
-                    <SelectItem value="متأخرة">متأخرة</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="priority">الأولوية</Label>
-                <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="عالية">عالية</SelectItem>
-                    <SelectItem value="متوسطة">متوسطة</SelectItem>
-                    <SelectItem value="منخفضة">منخفضة</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="assignee">المسؤول</Label>
-              <Input
-                id="assignee"
-                value={formData.assignee}
-                onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
-                placeholder="اسم المسؤول عن المهمة"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="project">المشروع</Label>
-              <Input
-                id="project"
-                value={formData.project}
-                onChange={(e) => setFormData({ ...formData, project: e.target.value })}
-                placeholder="اسم المشروع"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="dueDate">تاريخ التسليم</Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="tags">الوسوم (مفصولة بفاصلة)</Label>
-              <Input
-                id="tags"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="تصميم, برمجة, اختبار"
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              إلغاء
-            </Button>
-            <Button onClick={handleSaveTask}>
-              {selectedTask ? "حفظ التعديلات" : "إضافة المهمة"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent dir="rtl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
-            <AlertDialogDescription>
-              سيتم حذف المهمة نهائياً ولا يمكن التراجع عن هذا الإجراء.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              حذف
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <TaskDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };
