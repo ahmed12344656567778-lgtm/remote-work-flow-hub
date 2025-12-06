@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import Team from "./pages/Team";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
+import ChatRoom from "./pages/ChatRoom";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import RolesPermissions from "./pages/RolesPermissions";
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="users" element={<Users />} />
             <Route path="team" element={<Team />} />
             <Route path="chat" element={<Chat />} />
+            <Route path="chat/:id" element={<ChatRoom />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile />} />
             <Route path="roles" element={<RolesPermissions />} />

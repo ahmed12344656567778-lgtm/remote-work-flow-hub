@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -51,6 +52,7 @@ interface Conversation {
 
 const Chat = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedConversation, setSelectedConversation] = useState<number>(1);
   const [messageText, setMessageText] = useState("");
   const [searchText, setSearchText] = useState("");
@@ -161,9 +163,18 @@ const Chat = () => {
       4: "مشروع التجارة الإلكترونية",
     };
 
+    // Generate team name based on project
+    const teamNames: Record<number, string> = {
+      1: "فريق تطبيق الموبايل",
+      2: "فريق الموقع الإلكتروني",
+      3: "فريق إدارة المخزون",
+      4: "فريق التجارة الإلكترونية",
+    };
+
+    const newId = Date.now(); // Unique ID based on timestamp
     const newConversation: Conversation = {
-      id: conversations.length + 1,
-      name: `محادثة جديدة ${conversations.length + 1}`,
+      id: newId,
+      name: teamNames[projectId] || `فريق المشروع ${projectId}`,
       project: projectNames[projectId] || "مشروع غير معروف",
       projectId: projectId,
       lastMessage: "تم إنشاء المحادثة",
@@ -173,12 +184,23 @@ const Chat = () => {
       memberIds: memberIds,
     };
 
+    // Save to localStorage for persistence
+    const storedConversations = localStorage.getItem("chat_conversations");
+    const existingConversations = storedConversations ? JSON.parse(storedConversations) : [];
+    localStorage.setItem("chat_conversations", JSON.stringify([
+      { ...newConversation, membersCount: memberIds.length },
+      ...existingConversations
+    ]));
+
     setConversations([newConversation, ...conversations]);
-    setSelectedConversation(newConversation.id);
+    
     toast({
       title: "تم إنشاء المحادثة",
-      description: "تم إنشاء محادثة جديدة بنجاح",
+      description: "جاري التوجيه إلى صفحة المحادثة...",
     });
+
+    // Navigate to the new conversation page
+    navigate(`/chat/${newId}`);
   };
 
   const handleAddMembers = (memberIds: number[]) => {
@@ -227,7 +249,7 @@ const Chat = () => {
             .map((conversation) => (
               <div
                 key={conversation.id}
-                onClick={() => setSelectedConversation(conversation.id)}
+                onClick={() => navigate(`/chat/${conversation.id}`)}
                 className={`p-4 border-b border-border cursor-pointer hover:bg-accent transition-colors ${
                   selectedConversation === conversation.id ? "bg-accent" : ""
                 }`}
