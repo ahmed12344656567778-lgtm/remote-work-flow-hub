@@ -29,18 +29,15 @@ const Header = () => {
     <header className="w-full sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-soft transition-all duration-500 hover:bg-background/95 hover:shadow-medium hover:border-primary/20 group">
       <div className="container mx-auto px-4 sm:px-6 py-3">
         <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer transition-transform duration-300 hover:scale-105" onClick={() => navigate("/")}>
+          <div className="flex items-center cursor-pointer transition-transform duration-300 hover:scale-105" onClick={() => navigate("/")}>
             <div className="relative">
               <img 
                 src={logo} 
                 alt="FnW Logo" 
-                className="h-10 w-10 object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
+                className="h-12 w-12 object-cover rounded-full border-2 border-primary/30 transition-all duration-300 group-hover:border-primary group-hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
               />
               <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-l from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent transition-all duration-300">
-              FnW
-            </span>
           </div>
           
           {/* Desktop Navigation */}
