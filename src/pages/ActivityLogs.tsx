@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   Search,
   Filter,
@@ -29,8 +41,8 @@ import {
   FolderPlus,
   Trash2,
   Edit,
-  UserPlus,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ActivityLog {
   id: number;
@@ -41,74 +53,77 @@ interface ActivityLog {
   timestamp: string;
 }
 
+const initialLogs: ActivityLog[] = [
+  {
+    id: 1,
+    user: "أحمد محمد",
+    action: "تسجيل الدخول",
+    type: "login",
+    timestamp: "2024-11-16 10:30:00",
+  },
+  {
+    id: 2,
+    user: "فاطمة علي",
+    action: "إنشاء مشروع جديد",
+    type: "create",
+    target: "مشروع تطوير الموقع",
+    timestamp: "2024-11-16 10:25:00",
+  },
+  {
+    id: 3,
+    user: "محمد خالد",
+    action: "تعديل مهمة",
+    type: "edit",
+    target: "تصميم الواجهة الرئيسية",
+    timestamp: "2024-11-16 10:20:00",
+  },
+  {
+    id: 4,
+    user: "سارة أحمد",
+    action: "رفع ملف",
+    type: "upload",
+    target: "تقرير شهري.pdf",
+    timestamp: "2024-11-16 10:15:00",
+  },
+  {
+    id: 5,
+    user: "عمر حسن",
+    action: "حذف مهمة",
+    type: "delete",
+    target: "مراجعة الكود القديم",
+    timestamp: "2024-11-16 10:10:00",
+  },
+  {
+    id: 6,
+    user: "ليلى سعيد",
+    action: "إضافة عضو جديد",
+    type: "create",
+    target: "يوسف أحمد",
+    timestamp: "2024-11-16 10:05:00",
+  },
+  {
+    id: 7,
+    user: "خالد عبدالله",
+    action: "تسجيل الخروج",
+    type: "logout",
+    timestamp: "2024-11-16 10:00:00",
+  },
+  {
+    id: 8,
+    user: "نورة محمد",
+    action: "تعديل الإعدادات",
+    type: "edit",
+    target: "إعدادات البريد",
+    timestamp: "2024-11-16 09:55:00",
+  },
+];
+
 const ActivityLogs = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
-
-  const logs: ActivityLog[] = [
-    {
-      id: 1,
-      user: "أحمد محمد",
-      action: "تسجيل الدخول",
-      type: "login",
-      timestamp: "2024-11-16 10:30:00",
-    },
-    {
-      id: 2,
-      user: "فاطمة علي",
-      action: "إنشاء مشروع جديد",
-      type: "create",
-      target: "مشروع تطوير الموقع",
-      timestamp: "2024-11-16 10:25:00",
-    },
-    {
-      id: 3,
-      user: "محمد خالد",
-      action: "تعديل مهمة",
-      type: "edit",
-      target: "تصميم الواجهة الرئيسية",
-      timestamp: "2024-11-16 10:20:00",
-    },
-    {
-      id: 4,
-      user: "سارة أحمد",
-      action: "رفع ملف",
-      type: "upload",
-      target: "تقرير شهري.pdf",
-      timestamp: "2024-11-16 10:15:00",
-    },
-    {
-      id: 5,
-      user: "عمر حسن",
-      action: "حذف مهمة",
-      type: "delete",
-      target: "مراجعة الكود القديم",
-      timestamp: "2024-11-16 10:10:00",
-    },
-    {
-      id: 6,
-      user: "ليلى سعيد",
-      action: "إضافة عضو جديد",
-      type: "create",
-      target: "يوسف أحمد",
-      timestamp: "2024-11-16 10:05:00",
-    },
-    {
-      id: 7,
-      user: "خالد عبدالله",
-      action: "تسجيل الخروج",
-      type: "logout",
-      timestamp: "2024-11-16 10:00:00",
-    },
-    {
-      id: 8,
-      user: "نورة محمد",
-      action: "تعديل الإعدادات",
-      type: "edit",
-      target: "إعدادات البريد",
-      timestamp: "2024-11-16 09:55:00",
-    },
-  ];
+  const [logs, setLogs] = useState<ActivityLog[]>(initialLogs);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const { toast } = useToast();
 
   const getActionIcon = (type: string) => {
     switch (type) {
@@ -167,6 +182,43 @@ const ActivityLogs = () => {
     return matchesSearch && matchesFilter;
   });
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(filteredLogs.map(log => log.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id: number, checked: boolean) => {
+    if (checked) {
+      setSelectedIds(prev => [...prev, id]);
+    } else {
+      setSelectedIds(prev => prev.filter(i => i !== id));
+    }
+  };
+
+  const handleDeleteSingle = (id: number) => {
+    setLogs(prev => prev.filter(log => log.id !== id));
+    setSelectedIds(prev => prev.filter(i => i !== id));
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف السجل بنجاح",
+    });
+  };
+
+  const handleDeleteSelected = () => {
+    setLogs(prev => prev.filter(log => !selectedIds.includes(log.id)));
+    const count = selectedIds.length;
+    setSelectedIds([]);
+    toast({
+      title: "تم الحذف",
+      description: `تم حذف ${count} سجل بنجاح`,
+    });
+  };
+
+  const isAllSelected = filteredLogs.length > 0 && filteredLogs.every(log => selectedIds.includes(log.id));
+
   return (
     <div className="space-y-6" dir="rtl">
       <div className="flex items-center justify-between">
@@ -177,10 +229,36 @@ const ActivityLogs = () => {
           </p>
         </div>
 
-        <Button onClick={exportLogs}>
-          <Download className="ml-2 h-4 w-4" />
-          تصدير السجلات
-        </Button>
+        <div className="flex gap-2">
+          {selectedIds.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 className="ml-2 h-4 w-4" />
+                  حذف المحدد ({selectedIds.length})
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent dir="rtl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    هل أنت متأكد من حذف {selectedIds.length} سجل؟ لا يمكن التراجع عن هذا الإجراء.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-row-reverse gap-2">
+                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteSelected} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    حذف
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          <Button onClick={exportLogs}>
+            <Download className="ml-2 h-4 w-4" />
+            تصدير السجلات
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -217,16 +295,29 @@ const ActivityLogs = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox 
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 <TableHead className="text-right">المستخدم</TableHead>
                 <TableHead className="text-right">الإجراء</TableHead>
                 <TableHead className="text-right">النوع</TableHead>
                 <TableHead className="text-right">الهدف</TableHead>
                 <TableHead className="text-right">التوقيت</TableHead>
+                <TableHead className="text-right w-16">إجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredLogs.map((log) => (
                 <TableRow key={log.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedIds.includes(log.id)}
+                      onCheckedChange={(checked) => handleSelectOne(log.id, checked as boolean)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{log.user}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -240,6 +331,29 @@ const ActivityLogs = () => {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {log.timestamp}
+                  </TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent dir="rtl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex-row-reverse gap-2">
+                          <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteSingle(log.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            حذف
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}
