@@ -39,7 +39,6 @@ interface ActivityLog {
   type: "login" | "logout" | "create" | "edit" | "delete" | "upload";
   target?: string;
   timestamp: string;
-  ip: string;
 }
 
 const ActivityLogs = () => {
@@ -53,7 +52,6 @@ const ActivityLogs = () => {
       action: "تسجيل الدخول",
       type: "login",
       timestamp: "2024-11-16 10:30:00",
-      ip: "192.168.1.100",
     },
     {
       id: 2,
@@ -62,7 +60,6 @@ const ActivityLogs = () => {
       type: "create",
       target: "مشروع تطوير الموقع",
       timestamp: "2024-11-16 10:25:00",
-      ip: "192.168.1.101",
     },
     {
       id: 3,
@@ -71,7 +68,6 @@ const ActivityLogs = () => {
       type: "edit",
       target: "تصميم الواجهة الرئيسية",
       timestamp: "2024-11-16 10:20:00",
-      ip: "192.168.1.102",
     },
     {
       id: 4,
@@ -80,7 +76,6 @@ const ActivityLogs = () => {
       type: "upload",
       target: "تقرير شهري.pdf",
       timestamp: "2024-11-16 10:15:00",
-      ip: "192.168.1.103",
     },
     {
       id: 5,
@@ -89,7 +84,6 @@ const ActivityLogs = () => {
       type: "delete",
       target: "مراجعة الكود القديم",
       timestamp: "2024-11-16 10:10:00",
-      ip: "192.168.1.104",
     },
     {
       id: 6,
@@ -98,7 +92,6 @@ const ActivityLogs = () => {
       type: "create",
       target: "يوسف أحمد",
       timestamp: "2024-11-16 10:05:00",
-      ip: "192.168.1.105",
     },
     {
       id: 7,
@@ -106,7 +99,6 @@ const ActivityLogs = () => {
       action: "تسجيل الخروج",
       type: "logout",
       timestamp: "2024-11-16 10:00:00",
-      ip: "192.168.1.106",
     },
     {
       id: 8,
@@ -115,7 +107,6 @@ const ActivityLogs = () => {
       type: "edit",
       target: "إعدادات البريد",
       timestamp: "2024-11-16 09:55:00",
-      ip: "192.168.1.107",
     },
   ];
 
@@ -154,10 +145,10 @@ const ActivityLogs = () => {
 
   const exportLogs = () => {
     const csvContent = logs.map(log => 
-      `${log.timestamp},${log.user},${log.action},${log.target || "-"},${log.ip}`
+      `${log.timestamp},${log.user},${log.action},${log.target || "-"}`
     ).join("\n");
     
-    const blob = new Blob([`التوقيت,المستخدم,الإجراء,الهدف,IP\n${csvContent}`], { type: "text/csv" });
+    const blob = new Blob([`التوقيت,المستخدم,الإجراء,الهدف\n${csvContent}`], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -231,7 +222,6 @@ const ActivityLogs = () => {
                 <TableHead className="text-right">النوع</TableHead>
                 <TableHead className="text-right">الهدف</TableHead>
                 <TableHead className="text-right">التوقيت</TableHead>
-                <TableHead className="text-right">IP</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -250,9 +240,6 @@ const ActivityLogs = () => {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {log.timestamp}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {log.ip}
                   </TableCell>
                 </TableRow>
               ))}
