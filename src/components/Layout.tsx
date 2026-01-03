@@ -1,11 +1,11 @@
-import { NavLink, Outlet } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  FolderOpen, 
-  CheckSquare, 
-  Calendar, 
-  FileText, 
-  BarChart3, 
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  FolderOpen,
+  CheckSquare,
+  Calendar,
+  FileText,
+  BarChart3,
   Users,
   MessageSquare,
   Menu,
@@ -15,15 +15,46 @@ import {
   User,
   Shield,
   Activity,
-  Bell
+  Bell,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import NotificationSidebar from "@/components/NotificationSidebar";
+import { cn } from "@/lib/utils";
+
 
 const Layout = () => {
+  const location = useLocation();
+  const isChatRoute = location.pathname.startsWith("/chat");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isChatRoute) return;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverscroll = document.body.style.overscrollBehavior;
+    const prevHtmlOverscroll = document.documentElement.style.overscrollBehavior;
+    const root = document.getElementById("root");
+    const prevRootOverflow = root?.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    document.documentElement.style.overscrollBehavior = "none";
+    if (root) root.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overscrollBehavior = prevBodyOverscroll;
+      document.documentElement.style.overscrollBehavior = prevHtmlOverscroll;
+      if (root && typeof prevRootOverflow !== "undefined") root.style.overflow = prevRootOverflow;
+    };
+  }, [isChatRoute]);
+
 
   const navigation = [
     { name: "الصفحة الرئيسية", href: "/", icon: Home },
@@ -44,7 +75,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="h-screen bg-background flex overflow-hidden" dir="rtl">
+    <div className="h-screen h-[100dvh] bg-background flex overflow-hidden" dir="rtl">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -71,7 +102,7 @@ const Layout = () => {
         </div>
         
         {/* Sidebar Navigation - Scrollable */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className={cn("flex-1 p-4 space-y-2", isChatRoute ? "overflow-hidden" : "overflow-y-auto")}>
           {navigation.map((item) => {
             const Icon = item.icon;
             return (
@@ -122,10 +153,16 @@ const Layout = () => {
           </div>
         </header>
 
-        {/* Page content - Scrollable */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        {/* Page content */}
+        <main
+          className={cn(
+            "flex-1 min-h-0",
+            isChatRoute ? "overflow-hidden p-0" : "p-6 overflow-y-auto"
+          )}
+        >
           <Outlet />
         </main>
+
       </div>
     </div>
   );

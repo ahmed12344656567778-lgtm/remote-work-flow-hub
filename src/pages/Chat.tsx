@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Send,
   Paperclip,
@@ -141,7 +140,19 @@ const Chat = () => {
     },
   ];
 
+  const visibleMessages = messages.slice(-6);
+
+  const filteredConversations = conversations.filter(
+    (c) => c.name.includes(searchText) || c.project.includes(searchText)
+  );
+  const visibleConversations = filteredConversations.slice(0, 6);
+  const hiddenConversationsCount = Math.max(
+    0,
+    filteredConversations.length - visibleConversations.length
+  );
+
   const currentConversation = conversations.find((c) => c.id === selectedConversation);
+
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
@@ -218,9 +229,9 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex bg-background overflow-hidden" dir="rtl">
+    <div className="h-full flex bg-background overflow-hidden" dir="rtl">
       {/* Sidebar - Conversations List */}
-      <div className="w-80 border-l border-border flex flex-col h-screen overflow-hidden">
+      <div className="w-80 border-l border-border flex flex-col h-full overflow-hidden">
         <div className="p-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">المحادثات</h2>
@@ -243,43 +254,47 @@ const Chat = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          {conversations
-            .filter((c) => c.name.includes(searchText) || c.project.includes(searchText))
-            .map((conversation) => (
-              <div
-                key={conversation.id}
-                onClick={() => navigate(`/chat/${conversation.id}`)}
-                className={`p-4 border-b border-border cursor-pointer hover:bg-accent transition-colors ${
-                  selectedConversation === conversation.id ? "bg-accent" : ""
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarFallback>
-                      <Users className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-sm truncate">{conversation.name}</h3>
-                      {conversation.unreadCount > 0 && (
-                        <Badge className="mr-2">{conversation.unreadCount}</Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-1">{conversation.project}</p>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {conversation.lastMessage}
-                    </p>
+        <div className="flex-1 overflow-hidden">
+          {visibleConversations.map((conversation) => (
+            <div
+              key={conversation.id}
+              onClick={() => navigate(`/chat/${conversation.id}`)}
+              className={`p-4 border-b border-border cursor-pointer hover:bg-accent transition-colors ${
+                selectedConversation === conversation.id ? "bg-accent" : ""
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <Avatar>
+                  <AvatarFallback>
+                    <Users className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="font-semibold text-sm truncate">{conversation.name}</h3>
+                    {conversation.unreadCount > 0 && (
+                      <Badge className="mr-2">{conversation.unreadCount}</Badge>
+                    )}
                   </div>
+                  <p className="text-xs text-muted-foreground mb-1">{conversation.project}</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {conversation.lastMessage}
+                  </p>
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
+
+          {hiddenConversationsCount > 0 && (
+            <div className="p-3 text-xs text-muted-foreground">
+              +{hiddenConversationsCount} محادثات أخرى
+            </div>
+          )}
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Chat Header */}
         <div className="h-16 border-b border-border flex items-center justify-between px-6 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -322,10 +337,10 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Messages Area - Fixed height with auto-scroll to bottom */}
-        <div className="flex-1 overflow-y-auto p-6">
+        {/* Messages Area - Fixed (no scroll) */}
+        <div className="flex-1 overflow-hidden p-6">
           <div className="flex flex-col justify-end min-h-full space-y-4">
-            {messages.map((message) => (
+            {visibleMessages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.isCurrentUser ? "justify-start" : "justify-end"}`}
