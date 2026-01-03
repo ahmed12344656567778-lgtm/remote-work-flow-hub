@@ -218,10 +218,10 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex bg-background" dir="rtl">
+    <div className="h-screen flex bg-background overflow-hidden" dir="rtl">
       {/* Sidebar - Conversations List */}
-      <div className="w-80 border-l border-border flex flex-col">
-        <div className="p-4 border-b border-border">
+      <div className="w-80 border-l border-border flex flex-col h-screen overflow-hidden">
+        <div className="p-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">المحادثات</h2>
             <Button
@@ -243,7 +243,7 @@ const Chat = () => {
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           {conversations
             .filter((c) => c.name.includes(searchText) || c.project.includes(searchText))
             .map((conversation) => (
@@ -275,13 +275,13 @@ const Chat = () => {
                 </div>
               </div>
             ))}
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Chat Header */}
-        <div className="h-16 border-b border-border flex items-center justify-between px-6">
+        <div className="h-16 border-b border-border flex items-center justify-between px-6 flex-shrink-0">
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarFallback>
@@ -322,9 +322,9 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Messages Area */}
-        <ScrollArea className="flex-1 p-6">
-          <div className="space-y-4">
+        {/* Messages Area - Fixed height with auto-scroll to bottom */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex flex-col justify-end min-h-full space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -378,10 +378,10 @@ const Chat = () => {
               </div>
             ))}
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Message Input */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border flex-shrink-0">
           <div className="flex items-end gap-2">
             <Button
               size="icon"
