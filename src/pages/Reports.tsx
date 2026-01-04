@@ -6,15 +6,13 @@ import {
   BarChart3, 
   TrendingUp, 
   Download, 
-  Calendar,
-  Users,
   FolderOpen,
   CheckCircle,
   Clock,
   AlertTriangle,
   FileText,
-  PieChart,
-  Activity
+  Activity,
+  Users
 } from "lucide-react";
 import {
   Select,
@@ -24,6 +22,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  PieChart as RechartsPieChart,
+  Pie,
+  Legend
+} from "recharts";
 
 const Reports = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
@@ -37,14 +48,6 @@ const Reports = () => {
     { name: "تحديث البنية التحتية", completion: 60, tasksCompleted: 5, totalTasks: 8, status: "نشط" }
   ];
 
-  const teamPerformance = [
-    { name: "أحمد محمد", completedTasks: 12, pendingTasks: 3, efficiency: 85, department: "التطوير" },
-    { name: "فاطمة علي", completedTasks: 15, pendingTasks: 2, efficiency: 92, department: "التصميم" },
-    { name: "محمد خالد", completedTasks: 8, pendingTasks: 5, efficiency: 70, department: "التطوير" },
-    { name: "سارة أحمد", completedTasks: 10, pendingTasks: 1, efficiency: 88, department: "إدارة المشاريع" },
-    { name: "عمر حسن", completedTasks: 6, pendingTasks: 4, efficiency: 65, department: "الجودة" }
-  ];
-
   const monthlyStats = {
     projectsCompleted: 3,
     projectsInProgress: 5,
@@ -56,23 +59,30 @@ const Reports = () => {
     budgetUtilization: 67
   };
 
+  const taskStatusData = [
+    { name: "مكتملة", value: monthlyStats.tasksCompleted, color: "hsl(142, 76%, 36%)" },
+    { name: "قيد التنفيذ", value: monthlyStats.tasksPending, color: "hsl(217, 91%, 60%)" },
+    { name: "متأخرة", value: monthlyStats.tasksOverdue, color: "hsl(0, 84%, 60%)" }
+  ];
+
+  const getBarColor = (completion: number) => {
+    if (completion >= 80) return "hsl(142, 76%, 36%)";
+    if (completion >= 50) return "hsl(217, 91%, 60%)";
+    if (completion >= 30) return "hsl(45, 93%, 47%)";
+    return "hsl(0, 84%, 60%)";
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "نشط":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "مكتمل":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
       case "مؤجل":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
     }
-  };
-
-  const getEfficiencyColor = (efficiency: number) => {
-    if (efficiency >= 85) return "text-green-600";
-    if (efficiency >= 70) return "text-yellow-600";
-    return "text-red-600";
   };
 
   return (
@@ -156,105 +166,107 @@ const Reports = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Project Progress */}
+      {/* Project Progress Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            تقدم المشاريع
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={projectStats}
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                <XAxis 
+                  type="number" 
+                  domain={[0, 100]} 
+                  tickFormatter={(value) => `${value}%`}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis 
+                  type="category" 
+                  dataKey="name" 
+                  width={150}
+                  tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value: number) => [`${value}%`, 'نسبة الإنجاز']}
+                  labelFormatter={(label) => label}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--popover))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    direction: 'rtl'
+                  }}
+                />
+                <Bar dataKey="completion" radius={[0, 4, 4, 0]} maxBarSize={40}>
+                  {projectStats.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getBarColor(entry.completion)} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex flex-wrap gap-4 mt-4 justify-center">
+            {projectStats.map((project, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Badge className={getStatusColor(project.status)} variant="outline">
+                  {project.name}: {project.status}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Detailed Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Task Status Distribution - Pie Chart */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              تقدم المشاريع
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {projectStats.map((project, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{project.name}</h4>
-                      <p className="text-xs text-muted-foreground">
-                        {project.tasksCompleted}/{project.totalTasks} مهام مكتملة
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{project.completion}%</span>
-                      <Badge className={getStatusColor(project.status)}>
-                        {project.status}
-                      </Badge>
-                    </div>
-                  </div>
-                  <Progress value={project.completion} className="h-2" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Team Performance */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              أداء الفريق
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {teamPerformance.map((member, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
-                  <div className="space-y-1">
-                    <h4 className="font-medium text-sm">{member.name}</h4>
-                    <p className="text-xs text-muted-foreground">{member.department}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {member.completedTasks} مكتملة • {member.pendingTasks} قيد التنفيذ
-                    </p>
-                  </div>
-                  <div className="text-left">
-                    <p className={`text-sm font-bold ${getEfficiencyColor(member.efficiency)}`}>
-                      {member.efficiency}%
-                    </p>
-                    <p className="text-xs text-muted-foreground">الكفاءة</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Detailed Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Task Status Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
               توزيع حالة المهام
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm">مكتملة</span>
-                </div>
-                <span className="text-sm font-medium">{monthlyStats.tasksCompleted}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm">قيد التنفيذ</span>
-                </div>
-                <span className="text-sm font-medium">{monthlyStats.tasksPending}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm">متأخرة</span>
-                </div>
-                <span className="text-sm font-medium">{monthlyStats.tasksOverdue}</span>
-              </div>
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={taskStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={70}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {taskStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [value, name]}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      direction: 'rtl'
+                    }}
+                  />
+                  <Legend 
+                    verticalAlign="bottom"
+                    formatter={(value) => <span style={{ color: 'hsl(var(--foreground))' }}>{value}</span>}
+                  />
+                </RechartsPieChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
