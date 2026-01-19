@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -521,6 +521,9 @@ const Calendar = () => {
             <DialogTitle>
               {editingEvent ? "تعديل الحدث" : "إضافة حدث جديد"}
             </DialogTitle>
+            <DialogDescription>
+              {editingEvent ? "قم بتعديل بيانات الحدث" : "قم بإدخال تفاصيل الحدث الجديد"}
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
